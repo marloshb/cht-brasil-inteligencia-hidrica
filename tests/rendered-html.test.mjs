@@ -45,6 +45,31 @@ test("preserves the M0-M12 product catalog and governed agents", async () => {
   assert.match(page, /Pausar e assumir/);
 });
 
+test("implements the connected M0 control tower workflows", async () => {
+  const tower = await readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8");
+  for (const view of [
+    "Visão nacional",
+    "Mapa operacional",
+    "Alertas",
+    "Casos",
+    "Agenda de decisões",
+    "Briefing",
+    "Desempenho",
+  ]) {
+    assert.match(tower, new RegExp(view));
+  }
+  assert.match(tower, /createCaseFromAlert/);
+  assert.match(tower, /advanceCase/);
+  assert.match(tower, /resolveDecision/);
+  assert.match(tower, /CHTContext/);
+  assert.match(tower, /Águas Brasil \/ CNARH/);
+  assert.match(tower, /Hidroweb \/ Telemetria/);
+  assert.match(tower, /ArcGIS Living Atlas/);
+  assert.match(tower, /Event Bus CHT/);
+  assert.match(tower, /Abrir Governança/);
+  assert.match(tower, /Ver trace do agente/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

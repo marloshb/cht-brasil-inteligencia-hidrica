@@ -38,6 +38,20 @@ O estado compartilhado funciona como um **Context Bus**: módulo, território, j
 
 O mockup nunca concede aos agentes autoridade para outorgar, sancionar, publicar atos, emitir boletins oficiais ou encerrar incidentes. Esses passos usam a fila de aprovação humana.
 
+## M0 — Torre de Controle detalhada
+
+A Torre de Controle opera como o centro de coordenação da suíte e possui sete visões conectadas:
+
+- **Visão nacional:** arquitetura fonte → Event Bus → Context Bus → consumidores, rede M1–M12 e quadro de comando;
+- **Mapa operacional:** composição de camadas ANA/Living Atlas/CHT, ações territoriais e handoff para módulos especialistas;
+- **Alertas:** filtros, priorização, evidências, confiança, reconhecimento, escalonamento e criação de caso;
+- **Casos:** fluxo de triagem, investigação, decisão, monitoramento e conclusão, preservando SLA e correlationId;
+- **Agenda de decisões:** proposta estruturada, autoridade competente, fatos, inferências, limites e aprovação humana;
+- **Briefing:** síntese editável por turno, fontes, mudanças, validação e exportação;
+- **Desempenho:** saúde das integrações, qualidade, frescor, consumidores, throughput e SLA por fluxo crítico.
+
+Alertas podem gerar casos; casos avançam por workflow; decisões aprovadas atualizam o caso; integrações expõem seus consumidores; e qualquer handoff abre M4, M5, M7, M9, M11 ou M12 mantendo o mesmo contexto territorial.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
