@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type TowerEvent = {
   title: string;
@@ -240,6 +240,45 @@ export function ControlTowerModule({
   const [briefingText, setBriefingText] = useState(
     "O quadro nacional opera em condição de atenção. O principal evento é a redução persistente de vazão no São Francisco Norte, com exposição potencial de 37 UTHs. A fila regulatória permanece dentro do SLA, enquanto o contrato federativo da Bahia opera em modo parcial com fallback ativo.",
   );
+
+  useEffect(() => {
+    const receiveModuleEvent = (event: Event) => {
+      const detail = (event as CustomEvent<Record<string, unknown>>).detail;
+      if (!detail?.eventId || !detail.title) return;
+      const requestedSeverity = String(detail.severity ?? "Médio");
+      const severity: TowerAlert["severity"] = ["Crítico", "Alto", "Médio", "Baixo"].includes(requestedSeverity)
+        ? requestedSeverity as TowerAlert["severity"]
+        : "Médio";
+      setAlerts((items) => {
+        const eventId = String(detail.eventId);
+        if (items.some((item) => item.id === eventId)) return items;
+        const received: TowerAlert = {
+          id: eventId,
+          title: String(detail.title),
+          severity,
+          source: String(detail.source ?? "Context Bus CHT"),
+          module: String(detail.module ?? "m1"),
+          moduleName: String(detail.moduleName ?? "Identidade Hídrica"),
+          territory: String(detail.territory ?? "Contexto nacional"),
+          occurredAt: String(detail.occurredAt ?? clockLabel),
+          confidence: Number(detail.confidence ?? 80),
+          status: "Novo",
+          owner: "Curadoria M1",
+          sla: "02h 00m",
+          chtId: String(detail.chtId ?? "CHT-ID"),
+          recommendation: String(detail.recommendation ?? "Revisar evidências e encaminhar ao domínio responsável."),
+          evidence: [
+            "evento recebido via Context Bus",
+            "fonte, autoridade e versão preservadas",
+            "correlationId registrado na trilha de auditoria",
+          ],
+        };
+        return [received, ...items];
+      });
+    };
+    window.addEventListener("cht:module-event", receiveModuleEvent);
+    return () => window.removeEventListener("cht:module-event", receiveModuleEvent);
+  }, [clockLabel]);
 
   const selectedAlert = alerts.find((alert) => alert.id === selectedAlertId) ?? alerts[0];
   const filteredAlerts = useMemo(() => {

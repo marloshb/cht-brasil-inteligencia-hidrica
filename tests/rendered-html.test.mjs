@@ -70,6 +70,37 @@ test("implements the connected M0 control tower workflows", async () => {
   assert.match(tower, /Ver trace do agente/);
 });
 
+test("implements the connected M1 hydric identity workflows", async () => {
+  const [identity, page, tower] = await Promise.all([
+    readFile(new URL("../app/identity-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of [
+    "Busca mestre",
+    "UTHs",
+    "Resolver duplicidades",
+    "Crosswalks",
+    "Relações",
+    "Versões",
+    "Qualidade",
+    "Importação",
+  ]) {
+    assert.match(identity, new RegExp(view));
+  }
+  assert.match(identity, /resolveDuplicate/);
+  assert.match(identity, /addCrosswalk/);
+  assert.match(identity, /executeImport/);
+  assert.match(identity, /CHT-ID persistente · não reutilizável/);
+  assert.match(identity, /Águas Brasil \/ CNARH/);
+  assert.match(identity, /SNIRH \/ BHO6/);
+  assert.match(identity, /Feature Service estadual/);
+  assert.match(identity, /cht:focus-map/);
+  assert.match(identity, /cht:module-event/);
+  assert.match(page, /IdentityHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

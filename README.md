@@ -52,6 +52,21 @@ A Torre de Controle opera como o centro de coordenação da suíte e possui sete
 
 Alertas podem gerar casos; casos avançam por workflow; decisões aprovadas atualizam o caso; integrações expõem seus consumidores; e qualquer handoff abre M4, M5, M7, M9, M11 ou M12 mantendo o mesmo contexto territorial.
 
+## M1 — Identidade Hídrica detalhada
+
+O núcleo mestre resolve a identidade compartilhada pelos demais produtos sem substituir a autoridade dos sistemas de origem. As oito áreas são funcionais e mantêm seleção, território, mapa e versão sincronizados:
+
+- **Busca mestre:** pesquisa multichave por CHT-ID, identificador federado, nome, ato, endereço ou coordenada, com golden record, confiança e proveniência;
+- **UTHs:** registro territorial com endereço hídrico, domínio, autoridade, fontes e ciclo de vida que nunca reutiliza um identificador;
+- **Resolver duplicidades:** fila explicável, comparação lado a lado, evidências, divergências e fusão humana, reversível e versionada;
+- **Crosswalks:** correspondências temporais bidirecionais entre CNARH, Águas Brasil, órgãos estaduais, SICAR, SIGEF e Hidroweb;
+- **Relações:** grafo territorial, hidrológico, regulatório e observacional com handoff para os módulos consumidores;
+- **Versões:** histórico imutável, diff de atributos, fontes e relações, além de solicitação governada de reversão;
+- **Qualidade:** KPIs, contratos por fonte e fila de inconsistências com encaminhamento para curadoria e Torre de Controle;
+- **Importação:** wizard fonte → mapeamento → validação → resolução → publicação, com idempotência, exceções e eventos downstream.
+
+O M1 publica `cht:focus-map` para o quadro ArcGIS e `cht:module-event` para o M0. Assim, uma inconsistência ou importação com exceções aparece na Torre de Controle, enquanto a escolha de uma identidade reposiciona o mapa no mesmo contexto. A fusão de identidades críticas sempre exige curador humano e cria uma nova versão; registros brutos, identificadores de origem e decisões anteriores permanecem preservados.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
@@ -64,7 +79,7 @@ Fontes públicas demonstradas:
 
 ## Roteiro rápido
 
-1. Abra **Aplicações** e navegue entre os 13 produtos.
+1. Abra **Aplicações** e navegue entre os 13 produtos; no M1, percorra as oito visões do menu contextual.
 2. Altere o **Contexto territorial** na barra superior.
 3. Inicie J1, J2 ou J3 e use os controles live/replay no rodapé.
 4. Abra a execução do agente para ver plano, ferramentas, evidências e limites.
