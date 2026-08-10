@@ -266,6 +266,25 @@ npm run build
 node --test tests/rendered-html.test.mjs
 ```
 
+## GitHub e Cloudflare
+
+O código-fonte está no repositório público [marloshb/cht-brasil-inteligencia-hidrica](https://github.com/marloshb/cht-brasil-inteligencia-hidrica). A aplicação está preparada para Cloudflare Workers com SSR no Worker e arquivos estáticos servidos pelo binding `ASSETS`.
+
+Valide o pacote localmente sem publicar:
+
+```bash
+npm run cloudflare:check
+```
+
+Para permitir a publicação automatizada, cadastre estes segredos em **Settings → Secrets and variables → Actions** no GitHub:
+
+- `CLOUDFLARE_API_TOKEN`: token de API com permissão para implantar Workers;
+- `CLOUDFLARE_ACCOUNT_ID`: identificador da conta Cloudflare.
+
+Depois de integrar a configuração à `main`, abra **Actions → Cloudflare → Run workflow**. O job de publicação somente executa por acionamento manual na `main`; pushes e pull requests continuam validando build, testes e o bundle do Worker sem tentar usar segredos. Para uma publicação local autenticada, use `npm run cloudflare:deploy`.
+
+Nenhuma credencial é armazenada no repositório. A configuração direta da Cloudflare vive em `wrangler.jsonc`; o manifesto `.openai/hosting.json` permanece separado para manter a hospedagem atual sincronizada.
+
 ## Limitações do mockup
 
 - dados de negócio, atos, pessoas e decisões são sintéticos;

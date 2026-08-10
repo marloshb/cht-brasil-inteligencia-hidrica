@@ -611,3 +611,30 @@ test("removes all disposable starter preview files", async () => {
   await assert.rejects(access(new URL("../app/_sites-preview/SkeletonPreview.tsx", templateRoot)));
   await assert.rejects(access(new URL("../app/_sites-preview/preview.css", templateRoot)));
 });
+
+test("keeps the Cloudflare deployment reproducible and secret-free", async () => {
+  const [packageJson, wranglerSource, workflow, readme] = await Promise.all([
+    readFile(new URL("../package.json", import.meta.url), "utf8"),
+    readFile(new URL("../wrangler.jsonc", import.meta.url), "utf8"),
+    readFile(new URL("../.github/workflows/cloudflare.yml", import.meta.url), "utf8"),
+    readFile(new URL("../README.md", import.meta.url), "utf8"),
+  ]);
+  const packageConfig = JSON.parse(packageJson);
+  const wranglerConfig = JSON.parse(wranglerSource);
+
+  assert.equal(wranglerConfig.name, "cht-brasil-inteligencia-hidrica");
+  assert.equal(wranglerConfig.main, "dist/server/index.js");
+  assert.equal(wranglerConfig.assets.directory, "dist/client");
+  assert.equal(wranglerConfig.assets.binding, "ASSETS");
+  assert.equal(wranglerConfig.assets.run_worker_first, true);
+  assert.deepEqual(wranglerConfig.compatibility_flags, ["nodejs_compat"]);
+  assert.equal(wranglerConfig.observability.enabled, true);
+  assert.match(packageConfig.scripts["cloudflare:check"], /wrangler deploy --dry-run/);
+  assert.match(packageConfig.scripts["cloudflare:deploy"], /wrangler deploy/);
+  assert.match(workflow, /workflow_dispatch/);
+  assert.match(workflow, /github\.event_name == 'workflow_dispatch'/);
+  assert.match(workflow, /secrets\.CLOUDFLARE_API_TOKEN/);
+  assert.match(workflow, /secrets\.CLOUDFLARE_ACCOUNT_ID/);
+  assert.match(readme, /Actions → Cloudflare → Run workflow/);
+  assert.doesNotMatch(wranglerSource, /[A-Za-z0-9_-]{32,}/);
+});
