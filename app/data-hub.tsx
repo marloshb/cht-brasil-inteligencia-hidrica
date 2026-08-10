@@ -221,6 +221,34 @@ export function DataHub({ contextItem, territory, clockLabel, onNavigate, onOpen
   }, []);
 
   useEffect(() => {
+    const receiveDataQualityRequest = (event: Event) => {
+      const detail = (event as CustomEvent<{ seriesId?: string; chtId?: string; reason?: string; requestedBy?: string }>).detail;
+      if (!detail?.seriesId) return;
+      const matched = series.find((item) => item.id === detail.seriesId);
+      if (matched) {
+        setSelectedSeriesId(matched.id);
+        setSelectedStationId(matched.stationId);
+      }
+      const requestIssue: QualityIssue = {
+        id: `DQ-M6-${Date.now().toString(16).slice(-4).toUpperCase()}`,
+        seriesId: detail.seriesId,
+        rule: "Revisão de aplicabilidade solicitada pelo modelo",
+        severity: "Média",
+        window: `referência ${clockLabel}`,
+        value: detail.chtId ?? subject.chtId,
+        confidence: 90,
+        status: "Aberta",
+        recommendation: detail.reason ?? "Validar unidade, representatividade e cobertura antes da execução.",
+      };
+      setIssues((items) => [requestIssue, ...items]);
+      setSelectedIssueId(requestIssue.id);
+      onToast(`${detail.requestedBy ?? "M6"} solicitou revisão de ${detail.seriesId}; item criado na fila de qualidade.`);
+    };
+    window.addEventListener("cht:data-quality-request", receiveDataQualityRequest);
+    return () => window.removeEventListener("cht:data-quality-request", receiveDataQualityRequest);
+  }, [clockLabel, onToast, series, subject.chtId]);
+
+  useEffect(() => {
     const interval = window.setInterval(() => setLivePulse((value) => (value + 1) % 12), 1800);
     return () => window.clearInterval(interval);
   }, []);

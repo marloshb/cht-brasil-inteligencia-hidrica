@@ -126,6 +126,21 @@ O Data Hub integra observações hidrológicas, telemetria, automonitoramento e 
 
 O M5 recebe `cht:regulation-context` do M4 e `cht:identity-context` do M1. Publica `cht:data-context` para M6, M7, M9 e M10; retorna séries qualificadas e evidências ao M4 por `cht:monitoring-evidence-event`; movimenta o mapa por `cht:focus-map`; e envia anomalias e falhas de qualidade ao M0 por `cht:module-event`. O agente de Qualidade de Dados pode validar, comparar e propor flags ou backfill, mas não apaga nem sobrescreve a zona bruta e submete publicações controladas à política de aprovação.
 
+## M6 — Balanço & Cenários detalhado
+
+O M6 combina observações qualificadas, demandas reguladas, regras, infraestrutura e forçantes climáticas para comparar alternativas com escala, horizonte e incerteza explícitos. Modelos e cenários são versionados e reproduzíveis; recomendações sempre permanecem submetidas à decisão humana. O produto possui oito áreas:
+
+- **Balanço atual:** oferta, demanda, saldo, reserva, rede BHO6, fontes, percentis, diagnóstico, ressalvas e memória de cálculo;
+- **Modelos:** Model Registry com domínio de aplicabilidade, engine, resolução, skill, incerteza, contratos de entrada, testes, gates, ativação e rollback;
+- **Cenários:** workbench parametrizado por clima, demanda, eficiência, regras, infraestrutura e horizonte, com execução acompanhada e resultados comparáveis;
+- **Reservatórios:** volume, afluência, defluência, curva-alvo, restrições, operação simulada e efeitos a jusante sem comando operacional;
+- **Águas subterrâneas:** poços, nível, recarga, retirada, interação com águas superficiais, cobertura de monitoramento e confiança;
+- **Previsões:** ensemble, fan chart P10–P90, mediana, gatilhos, skill, fontes e decomposição da incerteza;
+- **Comparações:** matriz multicritério, pesos, análise de sensibilidade, trade-offs, recomendação assistida e decisão humana justificada;
+- **Biblioteca:** modelos, datasets, forçantes e pacotes de cenários com versão, checksum, licença, ambiente, linhagem e reutilização controlada.
+
+O M6 recebe `cht:data-context` do M5 e `cht:regulation-context` do M4. Publica `cht:scenario-context` para M7, M8, M9 e M10; devolve resultados e cenários selecionados ao M4 por `cht:scenario-result-event`; solicita revisões específicas ao M5 por `cht:data-quality-request`; sincroniza recortes com o ArcGIS por `cht:focus-map`; e envia alertas, alternativas e decisões ao M0 por `cht:module-event`. O agente de Modelagem e Cenários pode executar, simular e comparar, mas não opera infraestrutura, altera atos, publica previsões oficiais ou decide investimentos.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
@@ -138,7 +153,7 @@ Fontes públicas demonstradas:
 
 ## Roteiro rápido
 
-1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4 e M5.
+1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4, M5 e M6.
 2. Altere o **Contexto territorial** na barra superior.
 3. Inicie J1, J2 ou J3 e use os controles live/replay no rodapé.
 4. Abra a execução do agente para ver plano, ferramentas, evidências e limites.

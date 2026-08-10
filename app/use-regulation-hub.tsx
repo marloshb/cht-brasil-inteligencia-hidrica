@@ -203,6 +203,30 @@ export function UseRegulationHub({ contextItem, territory, clockLabel, onNavigat
   }, [onToast]);
 
   useEffect(() => {
+    const receiveScenarioResult = (event: Event) => {
+      const detail = (event as CustomEvent<{ scenarioId?: string; demandId?: string; recommendedFlow?: number; reliability?: number; balance?: number; deficit?: number; modelId?: string; status?: string }>).detail;
+      if (!detail?.scenarioId || !detail.demandId) return;
+      const revisionId = `REV-${detail.scenarioId}`;
+      setRevisions((items) => {
+        const current = items.find((item) => item.id === revisionId);
+        if (current) return items.map((item) => item.id === revisionId ? { ...item, status: detail.status === "Selecionado" ? "Aguardando autoridade" : "Em análise" } : item);
+        return [{
+          id: revisionId,
+          title: `Cenário hídrico ${detail.scenarioId} para ${detail.demandId}`,
+          trigger: `${detail.modelId ?? "modelo M6"} · confiabilidade ${detail.reliability ?? 0}% · saldo ${detail.balance ?? 0} hm³`,
+          actId: selectedAct.id,
+          impact: `vazão recomendada ${detail.recommendedFlow ?? "—"} L/s · déficit ${detail.deficit ?? 0} hm³`,
+          status: detail.status === "Selecionado" ? "Aguardando autoridade" : "Em análise",
+          due: "12 dias",
+        }, ...items];
+      });
+      onToast(`${detail.scenarioId} recebido do M6; revisão regulatória e impactos na demanda foram sincronizados.`);
+    };
+    window.addEventListener("cht:scenario-result-event", receiveScenarioResult);
+    return () => window.removeEventListener("cht:scenario-result-event", receiveScenarioResult);
+  }, [onToast, selectedAct.id]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => setAgentStep((step) => {
       if (step >= 4) { setAgentRunning(false); onToast("Pré-análise concluída; proposta não vinculante disponível para revisão humana."); return step; }

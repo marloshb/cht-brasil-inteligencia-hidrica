@@ -255,6 +255,51 @@ test("implements the connected M5 data hub workflows", async () => {
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("implements the connected M6 balance and scenarios workflows", async () => {
+  const [balance, page, dataHub, useRegulation, tower] = await Promise.all([
+    readFile(new URL("../app/balance-scenarios-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/data-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/use-regulation-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of [
+    "Balanço atual",
+    "Modelos",
+    "Cenários",
+    "Reservatórios",
+    "Águas subterrâneas",
+    "Previsões",
+    "Comparações",
+    "Biblioteca",
+  ]) {
+    assert.match(balance, new RegExp(view));
+  }
+  assert.match(balance, /runScenario/);
+  assert.match(balance, /createScenario/);
+  assert.match(balance, /registerModel/);
+  assert.match(balance, /activateModel/);
+  assert.match(balance, /simulateReservoir/);
+  assert.match(balance, /validateGroundwater/);
+  assert.match(balance, /decideComparison/);
+  assert.match(balance, /addLibraryItem/);
+  assert.match(balance, /Modelagem e Cenários/);
+  assert.match(balance, /não opera infraestrutura, altera ato, publica previsão oficial ou decide investimento/);
+  assert.match(balance, /Model Registry/);
+  assert.match(balance, /Monte Carlo/);
+  assert.match(balance, /cht:data-context/);
+  assert.match(balance, /cht:regulation-context/);
+  assert.match(balance, /cht:scenario-context/);
+  assert.match(balance, /cht:scenario-result-event/);
+  assert.match(balance, /cht:data-quality-request/);
+  assert.match(balance, /cht:module-event/);
+  assert.match(balance, /cht:focus-map/);
+  assert.match(dataHub, /cht:data-quality-request/);
+  assert.match(useRegulation, /cht:scenario-result-event/);
+  assert.match(page, /BalanceScenariosHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
