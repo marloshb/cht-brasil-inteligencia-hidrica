@@ -5,6 +5,7 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { ControlTowerModule } from "./control-tower";
 import { IdentityHub } from "./identity-hub";
+import { PassportHub } from "./passport-hub";
 
 declare global {
   interface Window {
@@ -417,7 +418,7 @@ export default function Home() {
   }, [running, speed, activeJourney.events.length]);
 
   useEffect(() => {
-    if (moduleId === "m1") return;
+    if (moduleId === "m1" || moduleId === "m2") return;
     const event = activeJourney.events[Math.min(journeyStep, activeJourney.events.length - 1)];
     const mapElement = mapRef.current as any;
     if (mapReady && mapElement?.goTo) {
@@ -538,7 +539,9 @@ export default function Home() {
   };
 
   const showIdentityMap = moduleId === "m1" && ["Busca mestre", "UTHs", "Relações"].includes(contextItem);
-  const hideWorkspace = (moduleId === "m0" && !["Visão nacional", "Mapa operacional"].includes(contextItem)) || (moduleId === "m1" && !showIdentityMap);
+  const showPassportMap = moduleId === "m2" && ["Meus territórios", "Buscar passaporte"].includes(contextItem);
+  const showSpecialistMap = showIdentityMap || showPassportMap;
+  const hideWorkspace = (moduleId === "m0" && !["Visão nacional", "Mapa operacional"].includes(contextItem)) || (moduleId === "m1" && !showIdentityMap) || (moduleId === "m2" && !showPassportMap);
 
   const startJourney = (journey: Journey) => {
     setActiveJourneyId(journey.id);
@@ -737,7 +740,19 @@ export default function Home() {
           />
         </div>
 
-        <section className={`workspace-grid ${hideWorkspace ? "generic-hidden" : ""} ${showIdentityMap ? "identity-map-only" : ""}`}>
+        <div className={moduleId === "m2" ? "" : "generic-hidden"}>
+          <PassportHub
+            contextItem={contextItem}
+            territory={territory}
+            clockLabel={formatClock(clock)}
+            onNavigate={setContextItem}
+            onOpenModule={switchModule}
+            onCreateRecord={() => setFormOpen(true)}
+            onToast={setToast}
+          />
+        </div>
+
+        <section className={`workspace-grid ${hideWorkspace ? "generic-hidden" : ""} ${showSpecialistMap ? "identity-map-only" : ""}`}>
           <article className="panel map-panel">
             <header className="panel-header map-header">
               <div><h2>Quadro geoespacial comum</h2><p>ArcGIS Maps SDK 5.1 · contexto sincronizado</p></div>
@@ -768,8 +783,8 @@ export default function Home() {
             </div>
             <footer className="selection-strip">
               <div className="selection-icon">⌖</div>
-              <div><small>SELEÇÃO ATIVA</small><strong>{moduleId === "m1" ? mapFocus.label : currentEvent.title}</strong><span>{moduleId === "m1" ? `${mapFocus.source} · confiança ${(mapFocus.confidence / 100).toFixed(2).replace(".", ",")}` : `${currentEvent.source} · confiança ${journeyStep > 2 ? "0,92" : "0,88"}`}</span></div>
-              <button onClick={() => moduleId === "m1" ? setContextItem("Versões") : setDecisionOpen(true)}>{moduleId === "m1" ? "Abrir identidade →" : "Abrir dossiê →"}</button>
+              <div><small>SELEÇÃO ATIVA</small><strong>{moduleId === "m1" || moduleId === "m2" ? mapFocus.label : currentEvent.title}</strong><span>{moduleId === "m1" || moduleId === "m2" ? `${mapFocus.source} · confiança ${(mapFocus.confidence / 100).toFixed(2).replace(".", ",")}` : `${currentEvent.source} · confiança ${journeyStep > 2 ? "0,92" : "0,88"}`}</span></div>
+              <button onClick={() => moduleId === "m1" ? setContextItem("Versões") : moduleId === "m2" ? setContextItem("Regularidade") : setDecisionOpen(true)}>{moduleId === "m1" ? "Abrir identidade →" : moduleId === "m2" ? "Abrir passaporte →" : "Abrir dossiê →"}</button>
             </footer>
           </article>
 
@@ -800,7 +815,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={`analytics-grid ${(moduleId === "m0" && contextItem !== "Visão nacional") || moduleId === "m1" ? "generic-hidden" : ""}`}>
+        <section className={`analytics-grid ${(moduleId === "m0" && contextItem !== "Visão nacional") || moduleId === "m1" || moduleId === "m2" ? "generic-hidden" : ""}`}>
           <article className="panel balance-card">
             <header className="panel-header"><div><h2>Balanço hídrico integrado</h2><p>Bacia selecionada · hm³/mês</p></div><button onClick={() => setDetailTab("entregas")}>Detalhar ↗</button></header>
             <div className="balance-main"><div><small>OFERTA DE REFERÊNCIA</small><strong>18,4 <em>hm³</em></strong><span>faixa de incerteza ± 1,1</span></div><div className="balance-divider" /><div><small>DEMANDA COMPROMETIDA</small><strong className="warn-text">13,1 <em>hm³</em></strong><span>71% da referência</span></div></div>
@@ -828,7 +843,7 @@ export default function Home() {
           </article>
         </section>
 
-        <section className={`panel cases-panel ${moduleId === "m0" || moduleId === "m1" ? "generic-hidden" : ""}`}>
+        <section className={`panel cases-panel ${moduleId === "m0" || moduleId === "m1" || moduleId === "m2" ? "generic-hidden" : ""}`}>
           <header className="panel-header"><div><h2>Casos e processos correlacionados</h2><p>Seleção territorial, tabela e agentes compartilham o mesmo contexto</p></div><div className="table-actions"><button onClick={() => setToast("Filtros de risco e SLA aplicados à tabela.")}>☷ Filtros</button><button onClick={exportReport}>⇩ CSV</button></div></header>
           <div className="table-wrap">
             <table>
@@ -838,7 +853,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={`module-blueprint panel ${moduleId === "m0" || moduleId === "m1" ? "generic-hidden" : ""}`}>
+        <section className={`module-blueprint panel ${moduleId === "m0" || moduleId === "m1" || moduleId === "m2" ? "generic-hidden" : ""}`}>
           <header className="blueprint-header"><div><span className="module-code">{activeModule.code}</span><div><h2>{activeModule.name}</h2><p>{activeModule.short}</p></div></div><div className="blueprint-tabs"><button className={detailTab === "operacao" ? "active" : ""} onClick={() => setDetailTab("operacao")}>Features</button><button className={detailTab === "fluxo" ? "active" : ""} onClick={() => setDetailTab("fluxo")}>Fluxo operacional</button><button className={detailTab === "formulario" ? "active" : ""} onClick={() => setDetailTab("formulario")}>Inputs</button><button className={detailTab === "entregas" ? "active" : ""} onClick={() => setDetailTab("entregas")}>Outputs & reports</button><button className={detailTab === "integracoes" ? "active" : ""} onClick={() => setDetailTab("integracoes")}>Integrações & IA</button></div></header>
           <div className="blueprint-body">
             {detailTab === "operacao" && <div className="feature-grid">{activeModule.features.map((item, index) => <article key={item}><span>0{index + 1}</span><strong>{item}</strong><p>Capacidade nativa do produto, ligada ao contexto CHT e à trilha de auditoria.</p></article>)}</div>}

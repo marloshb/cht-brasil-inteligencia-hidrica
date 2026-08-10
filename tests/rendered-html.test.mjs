@@ -101,6 +101,40 @@ test("implements the connected M1 hydric identity workflows", async () => {
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("implements the connected M2 hydric passport workflows", async () => {
+  const [passport, page, identity, tower] = await Promise.all([
+    readFile(new URL("../app/passport-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/identity-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of [
+    "Meus territórios",
+    "Buscar passaporte",
+    "Regularidade",
+    "Obrigações",
+    "Evidências",
+    "Solicitações",
+    "Compartilhamentos",
+  ]) {
+    assert.match(passport, new RegExp(view));
+  }
+  assert.match(passport, /completeObligation/);
+  assert.match(passport, /advanceRequest/);
+  assert.match(passport, /addEvidence/);
+  assert.match(passport, /createShare/);
+  assert.match(passport, /revokeShare/);
+  assert.match(passport, /Copiloto do Passaporte/);
+  assert.match(passport, /não equivale a certidão de regularidade/);
+  assert.match(passport, /cht:focus-map/);
+  assert.match(passport, /cht:module-event/);
+  assert.match(passport, /cht:identity-context/);
+  assert.match(passport, /cht:passport-context/);
+  assert.match(identity, /cht:identity-context/);
+  assert.match(page, /PassportHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

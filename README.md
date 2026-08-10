@@ -67,6 +67,20 @@ O núcleo mestre resolve a identidade compartilhada pelos demais produtos sem su
 
 O M1 publica `cht:focus-map` para o quadro ArcGIS e `cht:module-event` para o M0. Assim, uma inconsistência ou importação com exceções aparece na Torre de Controle, enquanto a escolha de uma identidade reposiciona o mapa no mesmo contexto. A fusão de identidades críticas sempre exige curador humano e cria uma nova versão; registros brutos, identificadores de origem e decisões anteriores permanecem preservados.
 
+## M2 — Passaporte Hídrico detalhado
+
+O Passaporte Hídrico reúne o contexto necessário para orientar pessoas, empresas e autoridades sem substituir os cadastros, atos e certidões mantidos nas fontes oficiais. Sete áreas operam sobre o mesmo CHT-ID:
+
+- **Meus territórios:** carteira de passaportes vinculados, papel do usuário, completude, situação contextual, próxima obrigação e atividade recente;
+- **Buscar passaporte:** busca protegida por papel e finalidade, com dados pessoais mascarados e sincronização territorial no mapa;
+- **Regularidade:** matriz explicável de identidade, representação, atos, licenciamento, monitoramento e fiscalização, sempre distinguindo fatos, inferências e limites;
+- **Obrigações:** agenda de prazos, autoridade, evidência e situação, com conclusão registrada ou handoff para M3, M4, M5 e M7;
+- **Evidências:** cofre versionado com fonte, referência, captura, vigência, integridade e validação assistida, sem apagar itens expirados;
+- **Solicitações:** workflow em seis etapas para vínculo, retificação e complementação, incluindo identidade M1, Gov.br, evidências e aprovação humana;
+- **Compartilhamentos:** acesso temporário, consentido, minimizado, autenticado, rastreável e imediatamente revogável.
+
+O Copiloto do Passaporte consulta M1, Águas Brasil, Gov.br e M5, explica pendências e propõe tratamento, mas não certifica regularidade, representação ou vínculo. O M1 emite `cht:identity-context`, o M2 distribui `cht:passport-context` aos consumidores e usa `cht:module-event` para enviar atrasos e aprovações ao M0. Seleções continuam usando `cht:focus-map` no quadro ArcGIS compartilhado.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
@@ -79,7 +93,7 @@ Fontes públicas demonstradas:
 
 ## Roteiro rápido
 
-1. Abra **Aplicações** e navegue entre os 13 produtos; no M1, percorra as oito visões do menu contextual.
+1. Abra **Aplicações** e navegue entre os 13 produtos; percorra as oito visões do M1 e as sete visões funcionais do M2.
 2. Altere o **Contexto territorial** na barra superior.
 3. Inicie J1, J2 ou J3 e use os controles live/replay no rodapé.
 4. Abra a execução do agente para ver plano, ferramentas, evidências e limites.

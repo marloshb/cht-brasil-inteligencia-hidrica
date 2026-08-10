@@ -254,6 +254,7 @@ export function IdentityHub({ contextItem, territory, clockLabel, onNavigate, on
   const focusRecord = (record: IdentityRecord) => {
     setSelectedId(record.chtId);
     window.dispatchEvent(new CustomEvent("cht:focus-map", { detail: { center: record.center, zoom: 8, label: `${record.chtId} · ${record.name}`, source: `Núcleo de Identidade · ${record.sourceCount} fontes`, confidence: record.confidence } }));
+    window.dispatchEvent(new CustomEvent("cht:identity-context", { detail: { chtId: record.chtId, name: record.name, waterAddress: record.waterAddress, authority: record.authority, confidence: record.confidence, sourceCount: record.sourceCount, center: record.center } }));
     onToast(`${record.chtId} selecionado; mapa, crosswalks, relações e histórico receberam o mesmo contexto.`);
   };
 
