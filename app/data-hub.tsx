@@ -346,6 +346,19 @@ export function DataHub({ contextItem, territory, clockLabel, onNavigate, onOpen
   }, [clockLabel, onToast, subject.chtId]);
 
   useEffect(() => {
+    const receiveAgentKnowledgeRequest = (event: Event) => {
+      const detail = (event as CustomEvent<{ requestId?: string; sourceId?: string; source?: string; version?: string; mode?: string }>).detail;
+      if (!detail?.requestId) return;
+      const knowledgeEvent: DataEvent = { id: `DHE-${detail.requestId}`, title: `Atualização de grounding solicitada · ${detail.sourceId ?? "fonte"}`, type: "agent.knowledge.refresh.requested", stationId: detail.source ?? subject.chtId, severity: "Média", detectedAt: clockLabel, confidence: 96, status: "Reconhecido", consumers: ["M0", "M5", "M11", "M12"] };
+      setEvents((items) => items.some((item) => item.id === knowledgeEvent.id) ? items : [knowledgeEvent, ...items]);
+      setSelectedEventId(knowledgeEvent.id);
+      onToast(`${detail.sourceId ?? "Fonte"}: atualização ${detail.mode ?? "incremental"} recebida do M12; versão ativa preservada durante a indexação.`);
+    };
+    window.addEventListener("cht:agent-knowledge-request", receiveAgentKnowledgeRequest);
+    return () => window.removeEventListener("cht:agent-knowledge-request", receiveAgentKnowledgeRequest);
+  }, [clockLabel, onToast, subject.chtId]);
+
+  useEffect(() => {
     const interval = window.setInterval(() => setLivePulse((value) => (value + 1) % 12), 1800);
     return () => window.clearInterval(interval);
   }, []);

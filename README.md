@@ -216,6 +216,21 @@ O M11 governa a cooperação entre União, estados, Distrito Federal, comitês, 
 
 O M11 recebe `cht:identity-context`, `cht:passport-context`, `cht:regulatory-context`, `cht:regulation-context`, `cht:data-context`, `cht:scenario-context`, `cht:inspection-context`, `cht:planning-context`, `cht:critical-event-context`, `cht:water-quality-context` e os eventos transversais `cht:module-event`. Publica `cht:governance-context` para preservar ente, acordo e contrato; ativa contratos no M5 por `cht:federative-data-contract-event`; envia políticas de acesso ao M2 por `cht:governance-access-policy-event`; encaminha remediações de mapping ao M1 por `cht:interoperability-remediation-event`; cria ações de adoção no M8 por `cht:governance-adoption-action-event`; registra pacotes por `cht:governance-transparency-event`; sincroniza o ArcGIS por `cht:focus-map`; e escala pactos, achados e decisões ao M0 por `cht:module-event`. O Agente de Governança pode consultar, comparar, testar e redigir, mas não assina pacto, concede acesso, altera autoridade, aplica sanção, publica dados ou decide orçamento.
 
+## M12 — Central de Agentes detalhada
+
+O M12 é o plano de controle de IA da suíte CHT Brasil. Ele recebe contexto e eventos de M0–M11, classifica intenção e risco, escolhe agentes especializados, limita ferramentas por política, acompanha cada execução e devolve apenas efeitos aprovados ao módulo responsável. Possui oito áreas operacionais:
+
+- **Copiloto:** entrada conversacional contextual, sugestões de tarefas, roteamento visual, especialistas, fontes, fatos, inferências, alternativas, limites e pontos de decisão humana;
+- **Catálogo:** agentes, donos, finalidades, módulos, modelos, versões, ferramentas autorizadas, ações negadas, risco, desempenho, pausa e novas execuções;
+- **Execuções:** filas, tarefas, sujeitos, rotas, duração, tokens, custo, confiança, trace distribuído, plano de oito etapas, evidências, checkpoints e exportação OpenTelemetry;
+- **Aprovações:** identidade da autoridade, finalidade, política, efeito exato, expiração, risco, rollback, justificativa, aprovação ou rejeição e devolução controlada;
+- **Exceções:** falhas, recusas de política, baixa confiança, timeouts, citações divergentes, contenção, investigação, resolução, playbooks e kill switch;
+- **Conhecimento:** Context Bus, GeoRAG, ArcGIS/Living Atlas, séries M5, políticas M11, fontes federativas, versões, frescor, qualidade, cobertura, lineage e atualização incremental;
+- **Avaliações:** suites de tarefa, grounding, segurança e adversarial, releases, regressões, drift, latência, gates, canário progressivo, observação e rollback;
+- **Observabilidade:** disponibilidade, throughput, latência, cache, recusas seguras, tokens, custos, SLO por agente, eventos de segurança, FinOps e contenção global.
+
+O M12 recebe `cht:identity-context`, `cht:passport-context`, `cht:regulatory-context`, `cht:regulation-context`, `cht:data-context`, `cht:scenario-context`, `cht:inspection-context`, `cht:planning-context`, `cht:critical-event-context`, `cht:water-quality-context`, `cht:governance-context`, `cht:module-event` e solicitações explícitas `cht:agent-work-request`. Publica `cht:agent-context` e `cht:agent-run-event` para preservar execução e correlação; devolve efeitos humanos por `cht:agent-approved-action-event`; registra remediações por `cht:agent-exception-remediation-event`; solicita atualização de grounding ao M5 por `cht:agent-knowledge-request`; e envia avaliações e releases ao M11 por `cht:agent-evaluation-event`. As ocorrências relevantes chegam ao M0 por `cht:module-event`. O Orquestrador opera com política deny-by-default: agentes podem consultar, correlacionar, simular e redigir, mas não recebem autoridade para decidir, assinar, publicar, sancionar, operar infraestrutura ou comprometer recursos.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
@@ -228,7 +243,7 @@ Fontes públicas demonstradas:
 
 ## Roteiro rápido
 
-1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4, M5, M6, M7, M8, M9, M10 e M11.
+1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4, M5, M6, M7, M8, M9, M10, M11 e M12.
 2. Altere o **Contexto territorial** na barra superior.
 3. Inicie J1, J2 ou J3 e use os controles live/replay no rodapé.
 4. Abra a execução do agente para ver plano, ferramentas, evidências e limites.

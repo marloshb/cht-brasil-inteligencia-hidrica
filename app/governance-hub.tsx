@@ -168,6 +168,22 @@ export function GovernanceHub({ contextItem, territory, clockLabel, onNavigate, 
     window.addEventListener("cht:module-event", receiveModuleEvent);
     return () => window.removeEventListener("cht:module-event", receiveModuleEvent);
   }, [clockLabel]);
+  useEffect(() => {
+    const receiveAgentEvaluation = (event: Event) => {
+      const detail = (event as CustomEvent<{ evaluationId?: string; agent?: string; release?: string; overall?: number; decision?: string; reviewedBy?: string }>).detail;
+      if (!detail?.evaluationId) return;
+      const entry: AuditEntry = { id: `AUD-${detail.evaluationId}`, time: clockLabel, actor: detail.reviewedBy ?? "Comitê de IA · M12", action: "agent.release.reviewed", object: `${detail.agent ?? "Agente"} · ${detail.release ?? "release"}`, decision: detail.decision ?? "avaliação registrada", correlation: `cht-${detail.evaluationId.toLowerCase()}`, hash: "eval…signed", risk: "Alto" };
+      setAudit((items) => items.some((item) => item.id === entry.id) ? items : [entry, ...items].slice(0, 18));
+    };
+    const receiveAgentApproval = (event: Event) => {
+      const detail = (event as CustomEvent<{ approvalId?: string; runId?: string; decision?: string; effect?: string; reviewedBy?: string }>).detail;
+      if (!detail?.approvalId) return;
+      const entry: AuditEntry = { id: `AUD-${detail.approvalId}`, time: clockLabel, actor: detail.reviewedBy ?? "Autoridade humana · M12", action: "agent.effect.reviewed", object: detail.runId ?? detail.approvalId, decision: `${detail.decision ?? "decidida"} · ${detail.effect ?? "efeito controlado"}`, correlation: `cht-${detail.approvalId.toLowerCase()}`, hash: "hil…signed", risk: "Alto" };
+      setAudit((items) => items.some((item) => item.id === entry.id) ? items : [entry, ...items].slice(0, 18));
+    };
+    window.addEventListener("cht:agent-evaluation-event", receiveAgentEvaluation); window.addEventListener("cht:agent-approved-action-event", receiveAgentApproval);
+    return () => { window.removeEventListener("cht:agent-evaluation-event", receiveAgentEvaluation); window.removeEventListener("cht:agent-approved-action-event", receiveAgentApproval); };
+  }, [clockLabel]);
   useEffect(() => { if (!agentRunning) return; const timer = window.setInterval(() => setAgentStep((step) => { if (step >= 7) { setAgentRunning(false); onToast("Análise federativa concluída; minutas e ações aguardam validação humana."); return step; } return step + 1; }), 760); return () => window.clearInterval(timer); }, [agentRunning, onToast]);
 
   const broadcastGovernance = () => window.dispatchEvent(new CustomEvent("cht:governance-context", { detail: { entityId: selectedEntity.id, contractId: selectedContract.id, accessId: selectedAccess.id, flowId: selectedFlow.id, maturity: selectedEntity.maturity, quality: selectedEntity.quality, territory: selectedEntity.region, center: selectedEntity.center } }));

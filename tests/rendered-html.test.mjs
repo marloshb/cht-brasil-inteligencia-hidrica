@@ -554,6 +554,47 @@ test("implements the connected M11 federative governance workflows", async () =>
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("implements the connected M12 agent control plane workflows", async () => {
+  const [agents, page, governance, dataHub, tower] = await Promise.all([
+    readFile(new URL("../app/agent-center-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/governance-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/data-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of ["Copiloto", "Catálogo", "Execuções", "Aprovações", "Exceções", "Conhecimento", "Avaliações", "Observabilidade"]) {
+    assert.match(agents, new RegExp(view));
+  }
+  assert.match(agents, /startRun/);
+  assert.match(agents, /decideApproval/);
+  assert.match(agents, /resolveException/);
+  assert.match(agents, /refreshKnowledge/);
+  assert.match(agents, /promoteRelease/);
+  assert.match(agents, /applyKillSwitch/);
+  assert.match(agents, /Orquestrador CHT/);
+  assert.match(agents, /deny-by-default/);
+  assert.match(agents, /não possui escopo para emitir ordem/);
+  assert.match(agents, /Não amplia escopo, não substitui competência e não autoriza publicação/);
+  assert.match(agents, /ArcGIS/);
+  assert.match(agents, /LLM Gateway/);
+  assert.match(agents, /OpenTelemetry/);
+  assert.match(agents, /Model Registry/);
+  for (const eventName of [
+    "cht:identity-context", "cht:passport-context", "cht:regulatory-context", "cht:regulation-context",
+    "cht:data-context", "cht:scenario-context", "cht:inspection-context", "cht:planning-context",
+    "cht:critical-event-context", "cht:water-quality-context", "cht:governance-context", "cht:module-event",
+    "cht:agent-work-request", "cht:agent-context", "cht:agent-run-event", "cht:agent-approved-action-event",
+    "cht:agent-exception-remediation-event", "cht:agent-knowledge-request", "cht:agent-evaluation-event",
+  ]) {
+    assert.match(agents, new RegExp(eventName));
+  }
+  assert.match(governance, /cht:agent-evaluation-event/);
+  assert.match(governance, /cht:agent-approved-action-event/);
+  assert.match(dataHub, /cht:agent-knowledge-request/);
+  assert.match(page, /AgentCenterHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
