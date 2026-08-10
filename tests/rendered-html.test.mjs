@@ -135,6 +135,42 @@ test("implements the connected M2 hydric passport workflows", async () => {
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("implements the connected M3 regulatory engine workflows", async () => {
+  const [regulatory, page, passport, tower] = await Promise.all([
+    readFile(new URL("../app/regulatory-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/passport-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of [
+    "Regras",
+    "Competências",
+    "Instrumentos",
+    "Agenda regulatória",
+    "Testes",
+    "Conflitos",
+    "Versões",
+    "Consultas",
+  ]) {
+    assert.match(regulatory, new RegExp(view));
+  }
+  assert.match(regulatory, /resolveCompetency/);
+  assert.match(regulatory, /runTests/);
+  assert.match(regulatory, /createRuleCandidate/);
+  assert.match(regulatory, /addInstrument/);
+  assert.match(regulatory, /decideConflict/);
+  assert.match(regulatory, /askQuestion/);
+  assert.match(regulatory, /GeoRAG Normativo/);
+  assert.match(regulatory, /Não constitui parecer jurídico/);
+  assert.match(regulatory, /cht:passport-context/);
+  assert.match(regulatory, /cht:regulatory-context/);
+  assert.match(regulatory, /cht:module-event/);
+  assert.match(regulatory, /cht:focus-map/);
+  assert.match(passport, /openConsumer/);
+  assert.match(page, /RegulatoryHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

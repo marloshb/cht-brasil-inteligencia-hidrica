@@ -81,6 +81,21 @@ O Passaporte Hídrico reúne o contexto necessário para orientar pessoas, empre
 
 O Copiloto do Passaporte consulta M1, Águas Brasil, Gov.br e M5, explica pendências e propõe tratamento, mas não certifica regularidade, representação ou vínculo. O M1 emite `cht:identity-context`, o M2 distribui `cht:passport-context` aos consumidores e usa `cht:module-event` para enviar atrasos e aprovações ao M0. Seleções continuam usando `cht:focus-map` no quadro ArcGIS compartilhado.
 
+## M3 — Motor Regulatório detalhado
+
+O Motor Regulatório transforma instrumentos e matrizes de competência em representações citáveis, territoriais, temporais e testáveis. O conteúdo demonstrativo sempre orienta a conferência na fonte oficial e não produz decisão jurídica automaticamente. O produto possui oito áreas:
+
+- **Regras:** catálogo com autoridade, fonte, vigência, território, expressão canônica, explicação, confiança, testes e consumidores;
+- **Competências:** resolvedor baseado em CHT-ID, geometria, domínio do trecho, finalidade e data de referência, com evidências e resultado indicativo;
+- **Instrumentos:** captura governada de leis, matrizes, atos e deliberações, preservando texto, publicação, vigência e regras derivadas;
+- **Agenda regulatória:** marcos futuros, releases, mudanças de contratos e análise de impacto nos módulos consumidores;
+- **Testes:** casos unitários, territoriais, temporais e de regressão, com falhas bloqueando a promoção de releases;
+- **Conflitos:** fila de sobreposições por hierarquia, território, vigência, finalidade e autoridade, sempre resolvida por decisão humana;
+- **Versões:** releases imutáveis, comparação de regras e vocabulários, gates de promoção e histórico de aprovações;
+- **Consultas:** GeoRAG Normativo com contexto espacial e temporal, fontes citadas, confiança, explicação e limites de uso.
+
+O M3 recebe `cht:passport-context` do M2, publica `cht:regulatory-context` para M4 e demais consumidores, usa `cht:focus-map` para competência territorial e envia conflitos, releases e validações ao M0 por `cht:module-event`. O agente pode consultar, citar, testar e explicar, mas não decidir, certificar, conceder ou negar atos.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
@@ -93,7 +108,7 @@ Fontes públicas demonstradas:
 
 ## Roteiro rápido
 
-1. Abra **Aplicações** e navegue entre os 13 produtos; percorra as oito visões do M1 e as sete visões funcionais do M2.
+1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais do M3.
 2. Altere o **Contexto territorial** na barra superior.
 3. Inicie J1, J2 ou J3 e use os controles live/replay no rodapé.
 4. Abra a execução do agente para ver plano, ferramentas, evidências e limites.
