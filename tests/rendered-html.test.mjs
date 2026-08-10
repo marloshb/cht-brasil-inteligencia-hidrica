@@ -502,6 +502,58 @@ test("implements the connected M10 water quality workflows", async () => {
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("implements the connected M11 federative governance workflows", async () => {
+  const [governance, page, identity, passport, dataHub, planning, tower] = await Promise.all([
+    readFile(new URL("../app/governance-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/identity-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/passport-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/data-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/planning-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of ["Entes", "Contratos de dados", "Catálogo", "Qualidade", "Acessos", "Interoperabilidade", "Transparência", "Auditoria"]) {
+    assert.match(governance, new RegExp(view));
+  }
+  assert.match(governance, /focusEntity/);
+  assert.match(governance, /activateContract/);
+  assert.match(governance, /approveAccess/);
+  assert.match(governance, /approveInterop/);
+  assert.match(governance, /resolveFinding/);
+  assert.match(governance, /approveTransparency/);
+  assert.match(governance, /approveAdoption/);
+  assert.match(governance, /Agente de Governança/);
+  assert.match(governance, /não assina pacto, concede acesso, altera autoridade, aplica sanção, publica dados ou decide orçamento/);
+  assert.match(governance, /OGC API/);
+  assert.match(governance, /DCAT-AP/);
+  assert.match(governance, /Gov.br/);
+  assert.match(governance, /dados.gov.br/);
+  assert.match(governance, /cht:identity-context/);
+  assert.match(governance, /cht:passport-context/);
+  assert.match(governance, /cht:regulatory-context/);
+  assert.match(governance, /cht:regulation-context/);
+  assert.match(governance, /cht:data-context/);
+  assert.match(governance, /cht:scenario-context/);
+  assert.match(governance, /cht:inspection-context/);
+  assert.match(governance, /cht:planning-context/);
+  assert.match(governance, /cht:critical-event-context/);
+  assert.match(governance, /cht:water-quality-context/);
+  assert.match(governance, /cht:governance-context/);
+  assert.match(governance, /cht:federative-data-contract-event/);
+  assert.match(governance, /cht:governance-access-policy-event/);
+  assert.match(governance, /cht:interoperability-remediation-event/);
+  assert.match(governance, /cht:governance-adoption-action-event/);
+  assert.match(governance, /cht:governance-transparency-event/);
+  assert.match(governance, /cht:module-event/);
+  assert.match(governance, /cht:focus-map/);
+  assert.match(dataHub, /cht:federative-data-contract-event/);
+  assert.match(passport, /cht:governance-access-policy-event/);
+  assert.match(identity, /cht:interoperability-remediation-event/);
+  assert.match(planning, /cht:governance-adoption-action-event/);
+  assert.match(page, /GovernanceHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

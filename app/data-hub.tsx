@@ -331,6 +331,21 @@ export function DataHub({ contextItem, territory, clockLabel, onNavigate, onOpen
   }, [clockLabel, onToast, subject.chtId]);
 
   useEffect(() => {
+    const receiveFederativeDataContract = (event: Event) => {
+      const detail = (event as CustomEvent<{ contractId?: string; title?: string; custodian?: string; schema?: string; sla?: string; classification?: string; version?: string; qualityFloor?: number; consumer?: string }>).detail;
+      if (!detail?.contractId) return;
+      const asset: CatalogAsset = { id: `CAT-${detail.contractId}`, name: detail.title ?? "Contrato federativo recebido", owner: detail.custodian ?? "Custodiante M11", kind: "Contrato de dados", standard: detail.schema ?? "schema governado", cadence: detail.sla ?? "SLA pactuado", access: detail.classification ?? "Uso interno", sla: detail.sla ?? "monitorado", quality: detail.qualityFloor ?? 90, status: "Ativo" };
+      setCatalog((items) => items.some((item) => item.id === asset.id) ? items.map((item) => item.id === asset.id ? asset : item) : [asset, ...items]);
+      const contractEvent: DataEvent = { id: `DHE-GOV-${detail.contractId}`, title: `Contrato federativo ativado · ${detail.version ?? "nova versão"}`, type: "governance.data.contract.activated", stationId: detail.custodian ?? subject.chtId, severity: "Média", detectedAt: clockLabel, confidence: detail.qualityFloor ?? 90, status: "Reconhecido", consumers: ["M0", "M1", "M5", "M11"] };
+      setEvents((items) => items.some((item) => item.id === contractEvent.id) ? items.map((item) => item.id === contractEvent.id ? contractEvent : item) : [contractEvent, ...items]);
+      setSelectedEventId(contractEvent.id);
+      onToast(`${detail.contractId} recebido do M11; catálogo, contrato e observabilidade foram sincronizados no Data Hub.`);
+    };
+    window.addEventListener("cht:federative-data-contract-event", receiveFederativeDataContract);
+    return () => window.removeEventListener("cht:federative-data-contract-event", receiveFederativeDataContract);
+  }, [clockLabel, onToast, subject.chtId]);
+
+  useEffect(() => {
     const interval = window.setInterval(() => setLivePulse((value) => (value + 1) % 12), 1800);
     return () => window.clearInterval(interval);
   }, []);

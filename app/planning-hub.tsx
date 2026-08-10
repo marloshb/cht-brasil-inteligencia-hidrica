@@ -153,6 +153,19 @@ export function PlanningHub({ contextItem, territory, clockLabel, onNavigate, on
   }, [onToast, selectedAction.territory, selectedProject.id]);
 
   useEffect(() => {
+    const receiveGovernanceAdoptionAction = (event: Event) => {
+      const detail = (event as CustomEvent<{ actionId?: string; entityId?: string; title?: string; territory?: string; budget?: number; due?: string; targetMaturity?: number; contractId?: string }>).detail;
+      if (!detail?.actionId || !detail.entityId) return;
+      const investmentId = `INV-${detail.actionId}`;
+      const investment: Investment = { id: investmentId, projectId: selectedProject.id, title: detail.title ?? "Capacidade e adoção federativa", source: "Pactuação federativa · M11", planned: detail.budget ?? 0, committed: 0, executed: 0, year: detail.due ?? "2027", territory: detail.territory ?? selectedAction.territory, status: "Previsto" };
+      setInvestments((items) => items.some((item) => item.id === investmentId) ? items.map((item) => item.id === investmentId ? investment : item) : [investment, ...items]);
+      onToast(`${detail.actionId} recebida do M11; investimento indicativo, meta de maturidade e contrato foram ligados ao portfólio.`);
+    };
+    window.addEventListener("cht:governance-adoption-action-event", receiveGovernanceAdoptionAction);
+    return () => window.removeEventListener("cht:governance-adoption-action-event", receiveGovernanceAdoptionAction);
+  }, [onToast, selectedAction.territory, selectedProject.id]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => setAgentStep((step) => {
       if (step >= 6) { setAgentRunning(false); onToast("Análise de portfólio concluída; proposta disponível para pactuação humana."); return step; }

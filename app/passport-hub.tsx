@@ -230,6 +230,18 @@ export function PassportHub({ contextItem, territory, clockLabel, onNavigate, on
   }, []);
 
   useEffect(() => {
+    const receiveGovernanceAccessPolicy = (event: Event) => {
+      const detail = (event as CustomEvent<{ accessId?: string; subject?: string; purpose?: string; scope?: string; expires?: string; decision?: string }>).detail;
+      if (!detail?.accessId) return;
+      const grant: ShareGrant = { id: detail.accessId, recipient: detail.subject ?? "Sujeito autorizado pelo M11", purpose: detail.purpose ?? "Finalidade governada", scopes: detail.scope?.split(" · ").slice(1) ?? ["Escopo mínimo"], expiresAt: detail.expires ?? "expiração controlada", status: detail.decision === "Ativo" ? "Ativo" : "Revogado", accesses: 0, lastAccess: "ainda não utilizado" };
+      setShares((items) => items.some((item) => item.id === grant.id) ? items.map((item) => item.id === grant.id ? grant : item) : [grant, ...items]);
+      onToast(`${detail.accessId} recebido do M11; compartilhamento, finalidade, escopo e expiração foram sincronizados.`);
+    };
+    window.addEventListener("cht:governance-access-policy-event", receiveGovernanceAccessPolicy);
+    return () => window.removeEventListener("cht:governance-access-policy-event", receiveGovernanceAccessPolicy);
+  }, [onToast]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => {
       setAgentStep((step) => {

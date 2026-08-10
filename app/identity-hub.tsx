@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Identifier = { source: string; id: string; authority: string; validFrom: string; status: string };
 
@@ -233,6 +233,18 @@ export function IdentityHub({ contextItem, territory, clockLabel, onNavigate, on
   const [newSource, setNewSource] = useState("CNARH");
   const [newSourceId, setNewSourceId] = useState("");
   const [compareVersion, setCompareVersion] = useState("v6");
+
+  useEffect(() => {
+    const receiveInteroperabilityRemediation = (event: Event) => {
+      const detail = (event as CustomEvent<{ flowId?: string; source?: string; title?: string; field?: string; records?: number; rule?: string }>).detail;
+      if (!detail?.flowId) return;
+      const issue: QualityIssue = { id: `QLT-GOV-${detail.flowId}`, title: detail.title ?? "Remediação de interoperabilidade recebida", source: detail.source ?? "M11 · Governança", field: detail.field ?? "crosswalk", severity: "Média", records: detail.records ?? 0, status: "Em correção", rule: detail.rule ?? "XW-GOV-001" };
+      setQualityIssues((items) => items.some((item) => item.id === issue.id) ? items.map((item) => item.id === issue.id ? issue : item) : [issue, ...items]);
+      onToast(`${detail.flowId} recebido do M11; mapping e reprocessamento entraram na fila de qualidade da identidade.`);
+    };
+    window.addEventListener("cht:interoperability-remediation-event", receiveInteroperabilityRemediation);
+    return () => window.removeEventListener("cht:interoperability-remediation-event", receiveInteroperabilityRemediation);
+  }, [onToast]);
   const [importStep, setImportStep] = useState(0);
   const [importSource, setImportSource] = useState("Feature Service estadual");
   const [importExecuted, setImportExecuted] = useState(false);

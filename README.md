@@ -201,6 +201,21 @@ O M10 integra classe, condição observada, metas progressivas, cargas, pressõe
 
 O M10 recebe `cht:data-context` do M5, `cht:regulation-context` do M4, `cht:scenario-context` do M6, `cht:field-evidence-event` do M7, `cht:planning-context` do M8 e `cht:critical-event-context` do M9. Publica `cht:water-quality-context` para preservar trecho, classe e condição nos consumidores; cria contratos de monitoramento no M5 por `cht:quality-data-request`; solicita cenários de cargas e recuperação ao M6 por `cht:quality-scenario-request`; abre revisão e condicionante no M4 por `cht:quality-regulatory-review-event`; envia medidas, orçamento indicativo e gates ao M8 por `cht:quality-recovery-action-event`; escala sinais persistentes ao M9 por `cht:quality-incident-event`; sincroniza o mapa por `cht:focus-map`; e envia desconformidades e decisões ao M0 por `cht:module-event`. O Agente de Qualidade pode consultar, correlacionar, simular e redigir, mas não altera enquadramento, licencia lançamento, sanciona usuário, publica alerta ou decide investimento.
 
+## M11 — Governança Federativa detalhado
+
+O M11 governa a cooperação entre União, estados, Distrito Federal, comitês, custodiantes e consumidores da plataforma. A solução preserva autoridade e dados na fonte, torna contratos e políticas observáveis e registra cada mudança, acesso e decisão sem executar efeitos externos automaticamente. Possui oito áreas operacionais:
+
+- **Entes:** papéis, autoridade, acordos, maturidade, capacidade, contratos, qualidade, SLA, adoção, mapa ArcGIS e plano de adesão;
+- **Contratos de dados:** custodiante, consumidor, schema, classificação, SLO/SLA, qualidade, versão, compatibilidade, change window, rollback e ativação humana;
+- **Catálogo:** ativos federados, domínios, padrões DCAT-AP/OGC, classificação, proveniência, lineage, consumidores e eventos de transformação;
+- **Qualidade:** score federativo, dimensões por ente, heatmap, achados, contratos afetados, responsáveis, prazos, evidências e planos de melhoria;
+- **Acessos:** identidade, finalidade, base/consentimento, minimização, classificação, escopo, risco, expiração, revogação e sincronização com o M2;
+- **Interoperabilidade:** origem, destino, padrão, mapping, conformance, latência, taxa de sucesso, payloads, testes, homologação e remediação no M1;
+- **Transparência:** inventários e pacotes, agregação, anonimização, classificação, completude, licença, checklist, assinatura e publicação responsável;
+- **Auditoria:** eventos imutáveis, ator, ação, objeto, decisão, correlationId, hash encadeado, retenção, anomalias e replay entre módulos.
+
+O M11 recebe `cht:identity-context`, `cht:passport-context`, `cht:regulatory-context`, `cht:regulation-context`, `cht:data-context`, `cht:scenario-context`, `cht:inspection-context`, `cht:planning-context`, `cht:critical-event-context`, `cht:water-quality-context` e os eventos transversais `cht:module-event`. Publica `cht:governance-context` para preservar ente, acordo e contrato; ativa contratos no M5 por `cht:federative-data-contract-event`; envia políticas de acesso ao M2 por `cht:governance-access-policy-event`; encaminha remediações de mapping ao M1 por `cht:interoperability-remediation-event`; cria ações de adoção no M8 por `cht:governance-adoption-action-event`; registra pacotes por `cht:governance-transparency-event`; sincroniza o ArcGIS por `cht:focus-map`; e escala pactos, achados e decisões ao M0 por `cht:module-event`. O Agente de Governança pode consultar, comparar, testar e redigir, mas não assina pacto, concede acesso, altera autoridade, aplica sanção, publica dados ou decide orçamento.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
@@ -213,7 +228,7 @@ Fontes públicas demonstradas:
 
 ## Roteiro rápido
 
-1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4, M5, M6, M7, M8, M9 e M10.
+1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4, M5, M6, M7, M8, M9, M10 e M11.
 2. Altere o **Contexto territorial** na barra superior.
 3. Inicie J1, J2 ou J3 e use os controles live/replay no rodapé.
 4. Abra a execução do agente para ver plano, ferramentas, evidências e limites.
