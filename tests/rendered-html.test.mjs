@@ -213,6 +213,48 @@ test("implements the connected M4 use regulation workflows", async () => {
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("implements the connected M5 data hub workflows", async () => {
+  const [dataHub, page, useRegulation, tower] = await Promise.all([
+    readFile(new URL("../app/data-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/use-regulation-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of [
+    "Estações",
+    "Séries",
+    "Telemetria",
+    "Imagens",
+    "Cobertura",
+    "Qualidade",
+    "Eventos",
+    "Catálogo",
+  ]) {
+    assert.match(dataHub, new RegExp(view));
+  }
+  assert.match(dataHub, /registerStation/);
+  assert.match(dataHub, /ingestDataset/);
+  assert.match(dataHub, /toggleConnector/);
+  assert.match(dataHub, /qualifySeries/);
+  assert.match(dataHub, /resolveIssue/);
+  assert.match(dataHub, /processImage/);
+  assert.match(dataHub, /acknowledgeEvent/);
+  assert.match(dataHub, /registerCatalogAsset/);
+  assert.match(dataHub, /Qualidade de Dados/);
+  assert.match(dataHub, /não apaga nem sobrescreve o bruto/);
+  assert.match(dataHub, /Hidroweb Telemetria/);
+  assert.match(dataHub, /STAC 1\.0/);
+  assert.match(dataHub, /SensorThings API/);
+  assert.match(dataHub, /cht:regulation-context/);
+  assert.match(dataHub, /cht:data-context/);
+  assert.match(dataHub, /cht:monitoring-evidence-event/);
+  assert.match(dataHub, /cht:module-event/);
+  assert.match(dataHub, /cht:focus-map/);
+  assert.match(useRegulation, /cht:monitoring-evidence-event/);
+  assert.match(page, /DataHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

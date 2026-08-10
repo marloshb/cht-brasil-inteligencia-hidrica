@@ -187,6 +187,22 @@ export function UseRegulationHub({ contextItem, territory, clockLabel, onNavigat
   }, []);
 
   useEffect(() => {
+    const receiveMonitoringEvidence = (event: Event) => {
+      const detail = (event as CustomEvent<{ evidenceId?: string; conditionId?: string; status?: string; qualifiedSeriesId?: string; measuredAverage?: number; qualityScore?: number }>).detail;
+      if (!detail?.conditionId || !detail.qualifiedSeriesId) return;
+      setConditions((items) => items.map((item) => item.id === detail.conditionId ? {
+        ...item,
+        status: detail.status === "Concluída" ? "Concluída" : item.status,
+        evidence: `${detail.qualifiedSeriesId} · ${detail.evidenceId ?? "evidência M5"} · qualidade ${detail.qualityScore ?? 0}%`,
+      } : item));
+      if (detail.conditionId === "CND-1142-04") setMonitoringReconciled(true);
+      onToast(`${detail.qualifiedSeriesId} recebida do M5; condicionante, evidência e memória de monitoramento foram sincronizadas.`);
+    };
+    window.addEventListener("cht:monitoring-evidence-event", receiveMonitoringEvidence);
+    return () => window.removeEventListener("cht:monitoring-evidence-event", receiveMonitoringEvidence);
+  }, [onToast]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => setAgentStep((step) => {
       if (step >= 4) { setAgentRunning(false); onToast("Pré-análise concluída; proposta não vinculante disponível para revisão humana."); return step; }

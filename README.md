@@ -111,6 +111,21 @@ O módulo operacionaliza demandas e obrigações de uso da água sem substituir 
 
 O M4 recebe `cht:regulatory-context` do M3 e também aceita `cht:passport-context` do M2. Publica `cht:regulation-context` para M5, M6 e M7; devolve prazos e conclusões ao M2 por `cht:regulation-obligation-event`; sincroniza a seleção com o ArcGIS por `cht:focus-map`; e envia demandas críticas, revisões e decisões ao M0 por `cht:module-event`. O agente de Pré-análise Regulatória pode consultar, comparar, simular e redigir, mas seu escopo de outorgar permanece bloqueado e qualquer encaminhamento exige revisão humana.
 
+## M5 — Data Hub detalhado
+
+O Data Hub integra observações hidrológicas, telemetria, automonitoramento e imagens orbitais em produtos rastreáveis. O fluxo preserva o dado bruto, aplica contratos e QA/QC, cria versões qualificadas e entrega contexto consistente aos módulos consumidores. O produto possui oito áreas operacionais:
+
+- **Estações:** rede integrada com identidade, operador, variáveis, saúde, latência, completude, qualidade, localização ArcGIS e registro governado de novos pontos;
+- **Séries:** hidrograma, comparação bruto × qualificado, linhagem raw → validação → QA/QC → publicação, versões, flags e exportação com metadados;
+- **Telemetria:** conectores API, MQTT e lote, offsets, filas, idempotência, replay, contratos, event stream e pausa sem perda de estado;
+- **Imagens:** busca STAC, Sentinel, Landsat, CBERS e GOES, cobertura, COG, máscaras, índices, vetores derivados, incerteza e eventos territoriais;
+- **Cobertura:** disponibilidade espacial, temporal e por variável, redundância, lacunas prioritárias e otimização assistida da expansão da rede;
+- **Qualidade:** regras de schema, unidade, tempo e consistência, fila de inconsistências, evidências, comparação, revisão humana e reprocessamento versionado;
+- **Eventos:** detecção, qualificação, correlação por CHT-ID, entrega no Event Bus, assinantes, acknowledgements e feedback dos consumidores;
+- **Catálogo:** produtos, responsáveis, padrões, acesso, SLA, qualidade, APIs OGC/SensorThings/STAC, contratos e linhagem ponta a ponta.
+
+O M5 recebe `cht:regulation-context` do M4 e `cht:identity-context` do M1. Publica `cht:data-context` para M6, M7, M9 e M10; retorna séries qualificadas e evidências ao M4 por `cht:monitoring-evidence-event`; movimenta o mapa por `cht:focus-map`; e envia anomalias e falhas de qualidade ao M0 por `cht:module-event`. O agente de Qualidade de Dados pode validar, comparar e propor flags ou backfill, mas não apaga nem sobrescreve a zona bruta e submete publicações controladas à política de aprovação.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
@@ -123,7 +138,7 @@ Fontes públicas demonstradas:
 
 ## Roteiro rápido
 
-1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3 e M4.
+1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4 e M5.
 2. Altere o **Contexto territorial** na barra superior.
 3. Inicie J1, J2 ou J3 e use os controles live/replay no rodapé.
 4. Abra a execução do agente para ver plano, ferramentas, evidências e limites.
