@@ -249,6 +249,29 @@ export function DataHub({ contextItem, territory, clockLabel, onNavigate, onOpen
   }, [clockLabel, onToast, series, subject.chtId]);
 
   useEffect(() => {
+    const receiveFieldEvidence = (event: Event) => {
+      const detail = (event as CustomEvent<{ evidenceId?: string; caseId?: string; chtId?: string; kind?: string; status?: string; hash?: string; capturedAt?: string; center?: [number, number] }>).detail;
+      if (!detail?.evidenceId) return;
+      const fieldEvent: DataEvent = {
+        id: `DHE-${detail.evidenceId}`,
+        title: "Evidência de campo recebida e validada",
+        type: "field.evidence.received",
+        stationId: detail.chtId ?? subject.chtId,
+        severity: "Baixa",
+        detectedAt: detail.capturedAt ?? clockLabel,
+        confidence: detail.status === "Sincronizada" ? 98 : 88,
+        status: "Reconhecido",
+        consumers: ["M4", "M7", "M11"],
+      };
+      setEvents((items) => items.some((item) => item.id === fieldEvent.id) ? items : [fieldEvent, ...items]);
+      setSelectedEventId(fieldEvent.id);
+      onToast(`${detail.evidenceId} recebida do M7; hash, origem e cadeia de custódia foram incorporados ao Data Hub.`);
+    };
+    window.addEventListener("cht:field-evidence-event", receiveFieldEvidence);
+    return () => window.removeEventListener("cht:field-evidence-event", receiveFieldEvidence);
+  }, [clockLabel, onToast, subject.chtId]);
+
+  useEffect(() => {
     const interval = window.setInterval(() => setLivePulse((value) => (value + 1) % 12), 1800);
     return () => window.clearInterval(interval);
   }, []);

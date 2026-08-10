@@ -227,6 +227,46 @@ export function UseRegulationHub({ contextItem, territory, clockLabel, onNavigat
   }, [onToast, selectedAct.id]);
 
   useEffect(() => {
+    const receiveInspectionResult = (event: Event) => {
+      const detail = (event as CustomEvent<{ resultId?: string; caseId?: string; demandId?: string; chtId?: string; outcome?: string; measure?: string; conformityScore?: number; status?: string; authority?: string; evidenceCount?: number }>).detail;
+      if (!detail?.resultId || !detail.caseId) return;
+      const revisionId = `REV-${detail.caseId}`;
+      const revisionStatus: Revision["status"] = detail.status === "Monitoramento" ? "Aguardando autoridade" : "Em análise";
+      setRevisions((items) => {
+        const revision: Revision = {
+          id: revisionId,
+          title: `Resultado fiscalizatório ${detail.resultId}`,
+          trigger: `${detail.outcome ?? "resultado M7"} · ${detail.evidenceCount ?? 0} evidências`,
+          actId: selectedAct.id,
+          impact: `${detail.measure ?? "avaliar medida"} · conformidade ${detail.conformityScore ?? 0}%`,
+          status: revisionStatus,
+          due: "30 dias",
+        };
+        return items.some((item) => item.id === revisionId) ? items.map((item) => item.id === revisionId ? revision : item) : [revision, ...items];
+      });
+      const conditionId = `CND-${detail.caseId}`;
+      setConditions((items) => {
+        const condition: Condition = {
+          id: conditionId,
+          title: `Acompanhar resultado fiscalizatório ${detail.caseId}`,
+          actId: selectedAct.id,
+          category: "Fiscalização",
+          frequency: "30 dias",
+          nextDue: "09 set 2026 · 30 dias",
+          evidence: `${detail.resultId} · M7 · ${detail.evidenceCount ?? 0} evidências`,
+          status: "Atenção",
+          module: "m7",
+        };
+        return items.some((item) => item.id === conditionId) ? items.map((item) => item.id === conditionId ? condition : item) : [condition, ...items];
+      });
+      window.dispatchEvent(new CustomEvent("cht:regulation-obligation-event", { detail: { obligationId: `OBR-${detail.caseId}`, chtId: detail.chtId, title: "Acompanhar diligência fiscalizatória", status: "Pendente", due: "09 set 2026", source: detail.resultId, authority: detail.authority } }));
+      onToast(`${detail.resultId} recebido do M7; revisão, condicionante e obrigação do passaporte foram sincronizadas.`);
+    };
+    window.addEventListener("cht:inspection-result-event", receiveInspectionResult);
+    return () => window.removeEventListener("cht:inspection-result-event", receiveInspectionResult);
+  }, [onToast, selectedAct.id]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => setAgentStep((step) => {
       if (step >= 4) { setAgentRunning(false); onToast("Pré-análise concluída; proposta não vinculante disponível para revisão humana."); return step; }

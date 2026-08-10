@@ -300,6 +300,55 @@ test("implements the connected M6 balance and scenarios workflows", async () => 
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("implements the connected M7 GeoFiscal workflows", async () => {
+  const [geoFiscal, page, dataHub, useRegulation, tower] = await Promise.all([
+    readFile(new URL("../app/geofiscal-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/data-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/use-regulation-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of [
+    "Detecções",
+    "Risco",
+    "Casos",
+    "Ordens",
+    "Campo",
+    "Evidências",
+    "Conformidade",
+    "Resultados",
+  ]) {
+    assert.match(geoFiscal, new RegExp(view));
+  }
+  assert.match(geoFiscal, /focusDetection/);
+  assert.match(geoFiscal, /createCaseFromDetection/);
+  assert.match(geoFiscal, /recalculateRisk/);
+  assert.match(geoFiscal, /advanceCase/);
+  assert.match(geoFiscal, /approveOrder/);
+  assert.match(geoFiscal, /startFieldSession/);
+  assert.match(geoFiscal, /captureEvidence/);
+  assert.match(geoFiscal, /verifyEvidence/);
+  assert.match(geoFiscal, /decideConformity/);
+  assert.match(geoFiscal, /closeResult/);
+  assert.match(geoFiscal, /Assistente de Vistoria/);
+  assert.match(geoFiscal, /não emite ordem, sanciona, autua, presume responsabilidade ou decide o caso/);
+  assert.match(geoFiscal, /ArcGIS offline/);
+  assert.match(geoFiscal, /cadeia de custódia/i);
+  assert.match(geoFiscal, /cht:data-context/);
+  assert.match(geoFiscal, /cht:scenario-context/);
+  assert.match(geoFiscal, /cht:regulation-context/);
+  assert.match(geoFiscal, /cht:inspection-context/);
+  assert.match(geoFiscal, /cht:field-evidence-event/);
+  assert.match(geoFiscal, /cht:inspection-result-event/);
+  assert.match(geoFiscal, /cht:module-event/);
+  assert.match(geoFiscal, /cht:focus-map/);
+  assert.match(dataHub, /cht:field-evidence-event/);
+  assert.match(useRegulation, /cht:inspection-result-event/);
+  assert.match(useRegulation, /cht:regulation-obligation-event/);
+  assert.match(page, /GeoFiscalHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
