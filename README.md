@@ -96,6 +96,21 @@ O Motor Regulatório transforma instrumentos e matrizes de competência em repre
 
 O M3 recebe `cht:passport-context` do M2, publica `cht:regulatory-context` para M4 e demais consumidores, usa `cht:focus-map` para competência territorial e envia conflitos, releases e validações ao M0 por `cht:module-event`. O agente pode consultar, citar, testar e explicar, mas não decidir, certificar, conceder ou negar atos.
 
+## M4 — Regulação de Usos detalhada
+
+O módulo operacionaliza demandas e obrigações de uso da água sem substituir a análise técnica nem a autoridade responsável pelo ato. Todas as áreas compartilham CHT-ID, passaporte, competência, ato, medição, cenário e trilha de decisão:
+
+- **Pré-análise:** workflow executável em seis etapas, dossiê federado, comparação demanda × autorização, checklist, alternativas e proposta não vinculante;
+- **Demandas:** triagem, pré-análise, exigência, decisão humana, protocolo demonstrativo e acompanhamento por SLA, risco e autoridade;
+- **Atos:** registro federado de autorizações, fontes, vigências, limites, regimes, versões e relações com M1, M2, M3 e M5;
+- **Condicionantes:** agenda sincronizada, filtros, evidência versionada, conclusão rastreável e retorno das obrigações ao passaporte M2;
+- **Automonitoramento:** série temporal, limites, lacunas, flags e reconciliação que preserva o dado bruto e publica uma versão qualificada no M5;
+- **Cobrança:** memória transparente e simulada com volume, preço, coeficiente, fontes e divergências, sem emissão financeira;
+- **Revisões:** gatilhos por demanda, vigência, regra, identidade ou medição, com snapshot, análise de impacto e decisão da autoridade;
+- **Conflitos:** comparação de demanda e restrição, fatores de risco, evidências, alternativas, recomendação assistida e decisão humana justificada.
+
+O M4 recebe `cht:regulatory-context` do M3 e também aceita `cht:passport-context` do M2. Publica `cht:regulation-context` para M5, M6 e M7; devolve prazos e conclusões ao M2 por `cht:regulation-obligation-event`; sincroniza a seleção com o ArcGIS por `cht:focus-map`; e envia demandas críticas, revisões e decisões ao M0 por `cht:module-event`. O agente de Pré-análise Regulatória pode consultar, comparar, simular e redigir, mas seu escopo de outorgar permanece bloqueado e qualquer encaminhamento exige revisão humana.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
@@ -108,7 +123,7 @@ Fontes públicas demonstradas:
 
 ## Roteiro rápido
 
-1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais do M3.
+1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3 e M4.
 2. Altere o **Contexto territorial** na barra superior.
 3. Inicie J1, J2 ou J3 e use os controles live/replay no rodapé.
 4. Abra a execução do agente para ver plano, ferramentas, evidências e limites.

@@ -171,6 +171,48 @@ test("implements the connected M3 regulatory engine workflows", async () => {
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("implements the connected M4 use regulation workflows", async () => {
+  const [useRegulation, page, regulatory, passport, tower] = await Promise.all([
+    readFile(new URL("../app/use-regulation-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/regulatory-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/passport-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of [
+    "Pré-análise",
+    "Demandas",
+    "Atos",
+    "Condicionantes",
+    "Automonitoramento",
+    "Cobrança",
+    "Revisões",
+    "Conflitos",
+  ]) {
+    assert.match(useRegulation, new RegExp(view));
+  }
+  assert.match(useRegulation, /runPreanalysis/);
+  assert.match(useRegulation, /createDemand/);
+  assert.match(useRegulation, /advanceDemand/);
+  assert.match(useRegulation, /approveProposal/);
+  assert.match(useRegulation, /submitConditionEvidence/);
+  assert.match(useRegulation, /reconcileMonitoring/);
+  assert.match(useRegulation, /simulateCharge/);
+  assert.match(useRegulation, /startRevision/);
+  assert.match(useRegulation, /decideConflict/);
+  assert.match(useRegulation, /Pré-análise Regulatória/);
+  assert.match(useRegulation, /o agente não concede, nega, altera ou publica ato/i);
+  assert.match(useRegulation, /cht:regulatory-context/);
+  assert.match(useRegulation, /cht:regulation-context/);
+  assert.match(useRegulation, /cht:regulation-obligation-event/);
+  assert.match(useRegulation, /cht:module-event/);
+  assert.match(useRegulation, /cht:focus-map/);
+  assert.match(regulatory, /cht:regulatory-context/);
+  assert.match(passport, /cht:regulation-obligation-event/);
+  assert.match(page, /UseRegulationHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

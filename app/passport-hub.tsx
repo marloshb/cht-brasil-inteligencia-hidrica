@@ -190,6 +190,46 @@ export function PassportHub({ contextItem, territory, clockLabel, onNavigate, on
   }, [clockLabel, passports]);
 
   useEffect(() => {
+    const receiveRegulationObligation = (event: Event) => {
+      const detail = (event as CustomEvent<{
+        obligationId?: string;
+        title?: string;
+        passportId?: string;
+        authority?: string;
+        status?: string;
+        dueDate?: string;
+      }>).detail;
+      if (!detail?.obligationId) return;
+
+      const status: ObligationStatus = detail.status === "Concluída" ? "Concluída" : "Pendente";
+      setObligations((items) => {
+        const existing = items.some((item) => item.id === detail.obligationId);
+        if (existing) {
+          return items.map((item) => item.id === detail.obligationId ? {
+            ...item,
+            status,
+            dueDate: detail.dueDate ?? item.dueDate,
+            countdown: status === "Concluída" ? "concluída no M4" : "acompanhar workflow M4",
+          } : item);
+        }
+        return [{
+          id: detail.obligationId,
+          title: detail.title ?? "Obrigação recebida da Regulação de Usos",
+          category: "Regulação",
+          authority: detail.authority ?? "Autoridade competente",
+          dueDate: detail.dueDate ?? "a definir",
+          countdown: status === "Concluída" ? "concluída no M4" : "acompanhar workflow M4",
+          status,
+          evidence: detail.passportId ? `Passaporte ${detail.passportId}` : "Workflow M4",
+          module: "m4",
+        }, ...items];
+      });
+    };
+    window.addEventListener("cht:regulation-obligation-event", receiveRegulationObligation);
+    return () => window.removeEventListener("cht:regulation-obligation-event", receiveRegulationObligation);
+  }, []);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => {
       setAgentStep((step) => {
