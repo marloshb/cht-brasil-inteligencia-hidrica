@@ -139,6 +139,20 @@ export function PlanningHub({ contextItem, territory, clockLabel, onNavigate, on
   }, [onToast, selectedAction.territory, selectedProject.id]);
 
   useEffect(() => {
+    const receiveQualityRecoveryAction = (event: Event) => {
+      const detail = (event as CustomEvent<{ measureId?: string; planId?: string; actionId?: string; projectId?: string; title?: string; segmentId?: string; territory?: string; budget?: number; priority?: string; benefit?: number; due?: string; scenarioId?: string }>).detail;
+      if (!detail?.measureId || !detail.segmentId) return;
+      const investmentId = `INV-QA-${detail.measureId}`;
+      const investment: Investment = { id: investmentId, projectId: detail.projectId ?? selectedProject.id, title: detail.title ?? "Recuperação da qualidade da água", source: "Carteira indicativa · pactuação requerida", planned: detail.budget ?? 0, committed: 0, executed: 0, year: detail.due ?? "2030", territory: detail.territory ?? selectedAction.territory, status: "Previsto" };
+      setInvestments((items) => items.some((item) => item.id === investmentId) ? items.map((item) => item.id === investmentId ? investment : item) : [investment, ...items]);
+      setActions((items) => items.map((item) => item.id === detail.actionId ? { ...item, priority: "P1", status: "Atenção", dependencies: [...new Set([...item.dependencies, detail.measureId!])] } : item));
+      onToast(`${detail.measureId} recebida do M10; ação, investimento indicativo, cenário e gate entraram no portfólio.`);
+    };
+    window.addEventListener("cht:quality-recovery-action-event", receiveQualityRecoveryAction);
+    return () => window.removeEventListener("cht:quality-recovery-action-event", receiveQualityRecoveryAction);
+  }, [onToast, selectedAction.territory, selectedProject.id]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => setAgentStep((step) => {
       if (step >= 6) { setAgentRunning(false); onToast("Análise de portfólio concluída; proposta disponível para pactuação humana."); return step; }

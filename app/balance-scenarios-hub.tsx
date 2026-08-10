@@ -222,6 +222,35 @@ export function BalanceScenariosHub({ contextItem, territory, clockLabel, onNavi
   }, [onToast]);
 
   useEffect(() => {
+    const receiveQualityScenarioRequest = (event: Event) => {
+      const detail = (event as CustomEvent<{ segmentId?: string; scenarioId?: string; modelId?: string; baselineLoad?: number; reductionTarget?: number; horizon?: string; territory?: string; requestedBy?: string }>).detail;
+      if (!detail?.segmentId) return;
+      const scenarioId = `CEN-QA-${detail.segmentId.replace("TRC-", "")}`;
+      const scenario: Scenario = {
+        id: scenarioId,
+        name: `Recuperação de qualidade · ${detail.segmentId}`,
+        climate: "Ensemble qualidade-vazão P10–P90",
+        rainfall: 88,
+        demand: 100,
+        efficiency: detail.reductionTarget ?? 31,
+        rule: `carga base ${detail.baselineLoad ?? 0} kg/d · M10`,
+        horizon: detail.horizon ?? "2026–2032",
+        balance: 4.8,
+        reliability: 91,
+        deficit: 0,
+        cost: 227.4,
+        score: 92,
+        status: "Executando",
+      };
+      setScenarios((items) => items.some((item) => item.id === scenarioId) ? items.map((item) => item.id === scenarioId ? scenario : item) : [scenario, ...items]);
+      setSelectedScenarioId(scenarioId); setRunningScenarioId(scenarioId); setRunProgress(12);
+      onToast(`${detail.requestedBy ?? "M10"} solicitou cenário de cargas; ${scenarioId} entrou na fila reproduzível.`);
+    };
+    window.addEventListener("cht:quality-scenario-request", receiveQualityScenarioRequest);
+    return () => window.removeEventListener("cht:quality-scenario-request", receiveQualityScenarioRequest);
+  }, [onToast]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => setAgentStep((step) => {
       if (step >= 5) { setAgentRunning(false); onToast("Análise concluída; alternativas e incertezas disponíveis para decisão humana."); return step; }

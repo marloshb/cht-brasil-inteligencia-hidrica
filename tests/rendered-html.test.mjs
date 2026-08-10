@@ -451,6 +451,57 @@ test("implements the connected M9 critical events workflows", async () => {
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("implements the connected M10 water quality workflows", async () => {
+  const [quality, page, dataHub, balance, useRegulation, planning, critical, tower] = await Promise.all([
+    readFile(new URL("../app/water-quality-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/data-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/balance-scenarios-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/use-regulation-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/planning-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/critical-events-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of ["Situação", "Trechos", "Enquadramento", "Qualidade", "Lançamentos", "Pressões", "Metas", "Recuperação"]) {
+    assert.match(quality, new RegExp(view));
+  }
+  assert.match(quality, /focusSegment/);
+  assert.match(quality, /qualifySample/);
+  assert.match(quality, /reviewFraming/);
+  assert.match(quality, /reconcileDischarge/);
+  assert.match(quality, /requestQualityData/);
+  assert.match(quality, /requestQualityScenario/);
+  assert.match(quality, /approveRecovery/);
+  assert.match(quality, /escalateIncident/);
+  assert.match(quality, /Agente de Qualidade/);
+  assert.match(quality, /não altera enquadramento, licencia lançamento, sanciona usuário, publica alerta ou decide investimento/);
+  assert.match(quality, /RNQA/);
+  assert.match(quality, /Laboratório/);
+  assert.match(quality, /Living Atlas/);
+  assert.match(quality, /CAR/);
+  assert.match(quality, /cht:data-context/);
+  assert.match(quality, /cht:regulation-context/);
+  assert.match(quality, /cht:scenario-context/);
+  assert.match(quality, /cht:planning-context/);
+  assert.match(quality, /cht:field-evidence-event/);
+  assert.match(quality, /cht:critical-event-context/);
+  assert.match(quality, /cht:water-quality-context/);
+  assert.match(quality, /cht:quality-data-request/);
+  assert.match(quality, /cht:quality-scenario-request/);
+  assert.match(quality, /cht:quality-regulatory-review-event/);
+  assert.match(quality, /cht:quality-recovery-action-event/);
+  assert.match(quality, /cht:quality-incident-event/);
+  assert.match(quality, /cht:module-event/);
+  assert.match(quality, /cht:focus-map/);
+  assert.match(dataHub, /cht:quality-data-request/);
+  assert.match(balance, /cht:quality-scenario-request/);
+  assert.match(useRegulation, /cht:quality-regulatory-review-event/);
+  assert.match(planning, /cht:quality-recovery-action-event/);
+  assert.match(critical, /cht:quality-incident-event/);
+  assert.match(page, /WaterQualityHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

@@ -186,6 +186,21 @@ O M9 funciona como sala de situação para secas, cheias, qualidade e falhas de 
 
 O M9 recebe `cht:data-context` do M5, `cht:scenario-context` do M6, `cht:planning-context` do M8, `cht:field-evidence-event` do M7 e `cht:regulation-context` do M4. Publica `cht:critical-event-context` para preservar incidente e comando nos módulos consumidores; solicita intensificação de observações ao M5 por `cht:incident-data-request`; solicita execução prioritária ao M6 por `cht:incident-scenario-request`; envia mobilização e impacto financeiro ao M8 por `cht:resource-priority-event`; sincroniza a seleção ArcGIS por `cht:focus-map`; e escala ativações, briefings e decisões ao M0 por `cht:module-event`. O Agente de Crise pode consultar, correlacionar, simular e redigir, mas não decreta emergência, publica alerta, opera reservatórios, mobiliza terceiros ou decide medidas.
 
+## M10 — Qualidade da Água detalhado
+
+O M10 integra classe, condição observada, metas progressivas, cargas, pressões, exposição e medidas de recuperação no mesmo recorte hidrográfico. O produto trata resultados como evidências contextualizadas — com método, incerteza, versão e fonte — e mantém decisão humana para qualquer efeito regulatório, alerta ou investimento. Possui oito áreas operacionais:
+
+- **Situação:** quadro integrado com mapa ArcGIS, IQA, desconformidades, alertas contextuais, fontes, contratos e saúde das integrações;
+- **Trechos:** passaporte BHO6/CHT-ID, classe, condição, tendência, conectividade, pressões, população exposta e perfil longitudinal;
+- **Enquadramento:** classe oficial × condição equivalente × meta progressiva, regra temporal citável, matriz de parâmetros, gap e revisão humana;
+- **Qualidade:** amostras, estações, parâmetros, método, laboratório, limite, incerteza, cadeia de custódia, QA/QC, versão qualificada e heatmap temporal;
+- **Lançamentos:** inventário de fontes, titular, ato, tratamento, vazão e carga autorizadas × observadas, capacidade de assimilação e reconciliação;
+- **Pressões:** atribuição probabilística de fontes pontuais, difusas e acidentais, ranking, CAR/SICAR, SNIS, Living Atlas, uso do solo e evidências M7;
+- **Metas:** baseline, atual, alvo, prazo, fonte, trajetória, risco, contrato de indicador no M5 e vínculo com planejamento;
+- **Recuperação:** portfólio de medidas, custo, benefício, carga evitada, ganho de IQA, cenários, gates, rollback, efetividade e decisão colegiada.
+
+O M10 recebe `cht:data-context` do M5, `cht:regulation-context` do M4, `cht:scenario-context` do M6, `cht:field-evidence-event` do M7, `cht:planning-context` do M8 e `cht:critical-event-context` do M9. Publica `cht:water-quality-context` para preservar trecho, classe e condição nos consumidores; cria contratos de monitoramento no M5 por `cht:quality-data-request`; solicita cenários de cargas e recuperação ao M6 por `cht:quality-scenario-request`; abre revisão e condicionante no M4 por `cht:quality-regulatory-review-event`; envia medidas, orçamento indicativo e gates ao M8 por `cht:quality-recovery-action-event`; escala sinais persistentes ao M9 por `cht:quality-incident-event`; sincroniza o mapa por `cht:focus-map`; e envia desconformidades e decisões ao M0 por `cht:module-event`. O Agente de Qualidade pode consultar, correlacionar, simular e redigir, mas não altera enquadramento, licencia lançamento, sanciona usuário, publica alerta ou decide investimento.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
@@ -198,7 +213,7 @@ Fontes públicas demonstradas:
 
 ## Roteiro rápido
 
-1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4, M5, M6, M7, M8 e M9.
+1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4, M5, M6, M7, M8, M9 e M10.
 2. Altere o **Contexto territorial** na barra superior.
 3. Inicie J1, J2 ou J3 e use os controles live/replay no rodapé.
 4. Abra a execução do agente para ver plano, ferramentas, evidências e limites.

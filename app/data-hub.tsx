@@ -308,6 +308,29 @@ export function DataHub({ contextItem, territory, clockLabel, onNavigate, onOpen
   }, [clockLabel, onToast, subject.chtId]);
 
   useEffect(() => {
+    const receiveQualityDataRequest = (event: Event) => {
+      const detail = (event as CustomEvent<{ segmentId?: string; targetId?: string; stationId?: string; parameters?: string[]; cadence?: string; qualityFloor?: number; reason?: string }>).detail;
+      if (!detail?.segmentId) return;
+      const qualityEvent: DataEvent = {
+        id: `DHE-QA-${detail.segmentId}`,
+        title: `Contrato de qualidade solicitado · ${detail.targetId ?? detail.segmentId}`,
+        type: "water.quality.monitoring.requested",
+        stationId: detail.stationId ?? subject.chtId,
+        severity: "Alta",
+        detectedAt: clockLabel,
+        confidence: detail.qualityFloor ?? 90,
+        status: "Encaminhado",
+        consumers: ["M3", "M4", "M6", "M8", "M9", "M10", "M11"],
+      };
+      setEvents((items) => items.some((item) => item.id === qualityEvent.id) ? items.map((item) => item.id === qualityEvent.id ? qualityEvent : item) : [qualityEvent, ...items]);
+      setSelectedEventId(qualityEvent.id);
+      onToast(`${detail.segmentId} recebido do M10; ${detail.parameters?.join(", ") ?? "parâmetros"} contratados em cadência ${detail.cadence ?? "operacional"}.`);
+    };
+    window.addEventListener("cht:quality-data-request", receiveQualityDataRequest);
+    return () => window.removeEventListener("cht:quality-data-request", receiveQualityDataRequest);
+  }, [clockLabel, onToast, subject.chtId]);
+
+  useEffect(() => {
     const interval = window.setInterval(() => setLivePulse((value) => (value + 1) % 12), 1800);
     return () => window.clearInterval(interval);
   }, []);

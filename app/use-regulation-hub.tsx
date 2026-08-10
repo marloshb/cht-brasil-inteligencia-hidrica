@@ -291,6 +291,30 @@ export function UseRegulationHub({ contextItem, territory, clockLabel, onNavigat
   }, [onToast, selectedAct.id]);
 
   useEffect(() => {
+    const receiveQualityRegulatoryReview = (event: Event) => {
+      const detail = (event as CustomEvent<{ segmentId?: string; dischargeId?: string; demandId?: string; permit?: string; title?: string; observedLoad?: number; authorizedLoad?: number; parameter?: string; authority?: string; evidenceId?: string; due?: string }>).detail;
+      if (!detail?.segmentId || !detail.dischargeId) return;
+      const revisionId = `REV-QA-${detail.dischargeId}`;
+      const revision: Revision = {
+        id: revisionId,
+        title: detail.title ?? "Revisar carga observada do lançamento",
+        trigger: `${detail.segmentId} · ${detail.parameter ?? "parâmetro de qualidade"}`,
+        actId: selectedAct.id,
+        impact: `${detail.observedLoad ?? 0} × ${detail.authorizedLoad ?? 0} kg/d · ${detail.evidenceId ?? "M10"}`,
+        status: "Em análise",
+        due: detail.due ?? "15 dias",
+      };
+      setRevisions((items) => items.some((item) => item.id === revisionId) ? items.map((item) => item.id === revisionId ? revision : item) : [revision, ...items]);
+      const conditionId = `CND-QA-${detail.dischargeId}`;
+      const condition: Condition = { id: conditionId, title: `Acompanhar carga e condição em ${detail.segmentId}`, actId: selectedAct.id, category: "Qualidade da água", frequency: "semanal + evento", nextDue: detail.due ?? "15 dias", evidence: `${detail.dischargeId} · ${detail.permit ?? "ato"} · M10`, status: "Atenção", module: "m10" };
+      setConditions((items) => items.some((item) => item.id === conditionId) ? items.map((item) => item.id === conditionId ? condition : item) : [condition, ...items]);
+      onToast(`${detail.dischargeId} recebido do M10; revisão e condicionante foram abertas sem alterar o ato.`);
+    };
+    window.addEventListener("cht:quality-regulatory-review-event", receiveQualityRegulatoryReview);
+    return () => window.removeEventListener("cht:quality-regulatory-review-event", receiveQualityRegulatoryReview);
+  }, [onToast, selectedAct.id]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => setAgentStep((step) => {
       if (step >= 4) { setAgentRunning(false); onToast("Pré-análise concluída; proposta não vinculante disponível para revisão humana."); return step; }
