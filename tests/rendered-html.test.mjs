@@ -399,6 +399,58 @@ test("implements the connected M8 water planning workflows", async () => {
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("implements the connected M9 critical events workflows", async () => {
+  const [critical, page, balance, dataHub, planning, tower] = await Promise.all([
+    readFile(new URL("../app/critical-events-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/balance-scenarios-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/data-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/planning-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of [
+    "Situação atual",
+    "Incidentes",
+    "Secas",
+    "Cheias",
+    "Reservatórios",
+    "Cenários",
+    "Recursos",
+    "Pós-evento",
+  ]) {
+    assert.match(critical, new RegExp(view));
+  }
+  assert.match(critical, /focusIncident/);
+  assert.match(critical, /activateIncident/);
+  assert.match(critical, /advanceIncident/);
+  assert.match(critical, /requestData/);
+  assert.match(critical, /requestScenario/);
+  assert.match(critical, /approveBulletin/);
+  assert.match(critical, /mobilizeResource/);
+  assert.match(critical, /decideAlternative/);
+  assert.match(critical, /addLesson/);
+  assert.match(critical, /Agente de Crise/);
+  assert.match(critical, /não decreta emergência, publica alerta, opera reservatórios, mobiliza terceiros ou decide medidas/);
+  assert.match(critical, /Monitor de Secas/);
+  assert.match(critical, /Defesa Civil/);
+  assert.match(critical, /cht:data-context/);
+  assert.match(critical, /cht:scenario-context/);
+  assert.match(critical, /cht:planning-context/);
+  assert.match(critical, /cht:field-evidence-event/);
+  assert.match(critical, /cht:regulation-context/);
+  assert.match(critical, /cht:critical-event-context/);
+  assert.match(critical, /cht:incident-data-request/);
+  assert.match(critical, /cht:incident-scenario-request/);
+  assert.match(critical, /cht:resource-priority-event/);
+  assert.match(critical, /cht:module-event/);
+  assert.match(critical, /cht:focus-map/);
+  assert.match(dataHub, /cht:incident-data-request/);
+  assert.match(balance, /cht:incident-scenario-request/);
+  assert.match(planning, /cht:resource-priority-event/);
+  assert.match(page, /CriticalEventsHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

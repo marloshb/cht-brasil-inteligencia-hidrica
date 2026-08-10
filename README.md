@@ -171,6 +171,21 @@ O M8 conecta planos, programas, ações, projetos, investimentos, metas, evidên
 
 O M8 recebe `cht:scenario-context` do M6, `cht:data-context` do M5, `cht:regulation-context` do M4 e `cht:inspection-result-event` do M7. Publica `cht:planning-context` para preservar plano, ação e projeto nos módulos consumidores; solicita novo cenário ao M6 por `cht:planning-demand-event`; cria contratos de indicadores no M5 por `cht:planning-monitoring-request`; abre revisão e condicionante no M4 por `cht:planning-regulatory-action-event`; sincroniza seleções no ArcGIS por `cht:focus-map`; e envia pactos, gates e reprogramações ao M0 por `cht:module-event`. O Agente de Portfólio pode consultar, comparar, priorizar e redigir, mas não pactua metas, compromete orçamento, cancela projetos, publica planos ou decide investimentos.
 
+## M9 — Eventos Críticos detalhado
+
+O M9 funciona como sala de situação para secas, cheias, qualidade e falhas de infraestrutura. O quadro operacional comum combina observação, previsão, exposição, recursos, decisões e uma timeline imutável, sem executar comandos externos automaticamente. O produto possui oito áreas:
+
+- **Situação atual:** mapa operacional ArcGIS, incidentes ativos, exposição, recursos, objetivos do turno, feed em tempo real e briefing;
+- **Incidentes:** verificação, ativação, coordenação, estabilização, recuperação, encerramento e revisão com comando e SLA explícitos;
+- **Secas:** Monitor de Secas, SPI/SPEI, vazão, armazenamento, demanda, persistência, população exposta e escada de gatilhos;
+- **Cheias:** hidrograma observado e previsto, faixa P10–P90, limiares, tempo de antecedência, ativos e comunidades expostas;
+- **Reservatórios:** volume, afluência, defluência, curva-alvo, restrições, efeitos a montante/jusante e simulação sem comando operacional;
+- **Cenários:** alternativas comparáveis, confiança, impacto, custo, velocidade, reversibilidade, governança, gatilhos e rollback;
+- **Recursos:** equipes, sensores, comunicação, modelagem, disponibilidade, ETA, cobertura, mobilização e impacto no portfólio;
+- **Pós-evento:** replay do estado e das decisões, desempenho meta × observado, lições, responsáveis, prazos e plano de ação.
+
+O M9 recebe `cht:data-context` do M5, `cht:scenario-context` do M6, `cht:planning-context` do M8, `cht:field-evidence-event` do M7 e `cht:regulation-context` do M4. Publica `cht:critical-event-context` para preservar incidente e comando nos módulos consumidores; solicita intensificação de observações ao M5 por `cht:incident-data-request`; solicita execução prioritária ao M6 por `cht:incident-scenario-request`; envia mobilização e impacto financeiro ao M8 por `cht:resource-priority-event`; sincroniza a seleção ArcGIS por `cht:focus-map`; e escala ativações, briefings e decisões ao M0 por `cht:module-event`. O Agente de Crise pode consultar, correlacionar, simular e redigir, mas não decreta emergência, publica alerta, opera reservatórios, mobiliza terceiros ou decide medidas.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
@@ -183,7 +198,7 @@ Fontes públicas demonstradas:
 
 ## Roteiro rápido
 
-1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4, M5, M6, M7 e M8.
+1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4, M5, M6, M7, M8 e M9.
 2. Altere o **Contexto territorial** na barra superior.
 3. Inicie J1, J2 ou J3 e use os controles live/replay no rodapé.
 4. Abra a execução do agente para ver plano, ferramentas, evidências e limites.

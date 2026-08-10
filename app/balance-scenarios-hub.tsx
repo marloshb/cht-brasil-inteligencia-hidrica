@@ -208,6 +208,20 @@ export function BalanceScenariosHub({ contextItem, territory, clockLabel, onNavi
   }, [onToast]);
 
   useEffect(() => {
+    const receiveIncidentScenarioRequest = (event: Event) => {
+      const detail = (event as CustomEvent<{ incidentId?: string; type?: string; territory?: string; horizon?: string; scenarioId?: string; priority?: string; center?: [number, number]; requestedBy?: string }>).detail;
+      if (!detail?.incidentId) return;
+      const scenarioId = `CEN-INC-${detail.incidentId.replace("INC-", "")}`;
+      const scenario: Scenario = { id: scenarioId, name: `${detail.type ?? "Evento"} · ${detail.incidentId}`, climate: detail.type === "Cheia" ? "Ensemble chuva-vazão 30 membros" : "Seco severo P10", rainfall: detail.type === "Cheia" ? 138 : 72, demand: detail.type === "Seca" ? 112 : 100, efficiency: 8, rule: `protocolo ${detail.priority ?? "N2"} · M9`, horizon: detail.horizon ?? "72 h", balance: detail.type === "Seca" ? -0.8 : 4.1, reliability: 90, deficit: detail.type === "Seca" ? 3.4 : 0, cost: 2.8, score: 89, status: "Executando" };
+      setScenarios((items) => items.some((item) => item.id === scenarioId) ? items.map((item) => item.id === scenarioId ? scenario : item) : [scenario, ...items]);
+      setSelectedScenarioId(scenarioId); setRunningScenarioId(scenarioId); setRunProgress(12);
+      onToast(`${detail.requestedBy ?? "M9"} solicitou execução prioritária; ${scenarioId} entrou na fila operacional.`);
+    };
+    window.addEventListener("cht:incident-scenario-request", receiveIncidentScenarioRequest);
+    return () => window.removeEventListener("cht:incident-scenario-request", receiveIncidentScenarioRequest);
+  }, [onToast]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => setAgentStep((step) => {
       if (step >= 5) { setAgentRunning(false); onToast("Análise concluída; alternativas e incertezas disponíveis para decisão humana."); return step; }

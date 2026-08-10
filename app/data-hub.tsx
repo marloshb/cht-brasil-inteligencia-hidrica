@@ -295,6 +295,19 @@ export function DataHub({ contextItem, territory, clockLabel, onNavigate, onOpen
   }, [clockLabel, onToast, subject.chtId]);
 
   useEffect(() => {
+    const receiveIncidentDataRequest = (event: Event) => {
+      const detail = (event as CustomEvent<{ incidentId?: string; type?: string; territory?: string; stationId?: string; variables?: string[]; cadence?: string; priority?: string; reason?: string; center?: [number, number] }>).detail;
+      if (!detail?.incidentId) return;
+      const incidentEvent: DataEvent = { id: `DHE-INC-${detail.incidentId}`, title: `Observação intensificada · ${detail.type ?? "evento crítico"}`, type: "critical.monitoring.intensified", stationId: detail.stationId ?? subject.chtId, severity: detail.priority === "N3" || detail.priority === "N4" ? "Crítica" : "Alta", detectedAt: clockLabel, confidence: 96, status: "Encaminhado", consumers: ["M0", "M6", "M9", "M11"] };
+      setEvents((items) => items.some((item) => item.id === incidentEvent.id) ? items.map((item) => item.id === incidentEvent.id ? incidentEvent : item) : [incidentEvent, ...items]);
+      setSelectedEventId(incidentEvent.id);
+      onToast(`${detail.incidentId} recebido do M9; ${detail.variables?.join(", ") ?? "variáveis"} priorizadas em cadência ${detail.cadence ?? "operacional"}.`);
+    };
+    window.addEventListener("cht:incident-data-request", receiveIncidentDataRequest);
+    return () => window.removeEventListener("cht:incident-data-request", receiveIncidentDataRequest);
+  }, [clockLabel, onToast, subject.chtId]);
+
+  useEffect(() => {
     const interval = window.setInterval(() => setLivePulse((value) => (value + 1) % 12), 1800);
     return () => window.clearInterval(interval);
   }, []);

@@ -125,6 +125,20 @@ export function PlanningHub({ contextItem, territory, clockLabel, onNavigate, on
   }, []);
 
   useEffect(() => {
+    const receiveResourcePriority = (event: Event) => {
+      const detail = (event as CustomEvent<{ incidentId?: string; planId?: string; actionId?: string; resourceId?: string; title?: string; territory?: string; priority?: string; budgetImpact?: number; due?: string; center?: [number, number] }>).detail;
+      if (!detail?.incidentId || !detail.actionId) return;
+      setActions((items) => items.map((item) => item.id === detail.actionId ? { ...item, priority: "P1", status: "Atenção", dependencies: [...new Set([...item.dependencies, detail.incidentId!])] } : item));
+      const investmentId = `INV-INC-${detail.incidentId}`;
+      const investment: Investment = { id: investmentId, projectId: selectedProject.id, title: detail.title ?? "Resposta a evento crítico", source: "Reserva operacional · previsão", planned: detail.budgetImpact ?? 0, committed: 0, executed: 0, year: "imediato", territory: detail.territory ?? selectedAction.territory, status: "Previsto" };
+      setInvestments((items) => items.some((item) => item.id === investmentId) ? items.map((item) => item.id === investmentId ? investment : item) : [investment, ...items]);
+      onToast(`${detail.incidentId} recebido do M9; prioridade, dependência e impacto orçamentário foram registrados no portfólio.`);
+    };
+    window.addEventListener("cht:resource-priority-event", receiveResourcePriority);
+    return () => window.removeEventListener("cht:resource-priority-event", receiveResourcePriority);
+  }, [onToast, selectedAction.territory, selectedProject.id]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => setAgentStep((step) => {
       if (step >= 6) { setAgentRunning(false); onToast("Análise de portfólio concluída; proposta disponível para pactuação humana."); return step; }
