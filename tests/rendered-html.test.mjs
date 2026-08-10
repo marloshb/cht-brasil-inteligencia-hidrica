@@ -349,6 +349,56 @@ test("implements the connected M7 GeoFiscal workflows", async () => {
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("implements the connected M8 water planning workflows", async () => {
+  const [planning, page, balance, dataHub, useRegulation, tower] = await Promise.all([
+    readFile(new URL("../app/planning-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/balance-scenarios-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/data-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/use-regulation-hub.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/control-tower.tsx", import.meta.url), "utf8"),
+  ]);
+  for (const view of [
+    "Planos",
+    "Programas",
+    "Ações",
+    "Projetos",
+    "Investimentos",
+    "Metas",
+    "Resultados",
+    "Avaliação",
+  ]) {
+    assert.match(planning, new RegExp(view));
+  }
+  assert.match(planning, /importPlan/);
+  assert.match(planning, /createProgram/);
+  assert.match(planning, /advanceAction/);
+  assert.match(planning, /approveGate/);
+  assert.match(planning, /allocateInvestment/);
+  assert.match(planning, /requestMonitoring/);
+  assert.match(planning, /registerResult/);
+  assert.match(planning, /decideEvaluation/);
+  assert.match(planning, /Agente de Portfólio/);
+  assert.match(planning, /não pactua metas, compromete orçamento, cancela projetos, publica planos ou decide investimentos/);
+  assert.match(planning, /Transferegov/);
+  assert.match(planning, /PNRH/);
+  assert.match(planning, /cht:scenario-context/);
+  assert.match(planning, /cht:data-context/);
+  assert.match(planning, /cht:regulation-context/);
+  assert.match(planning, /cht:inspection-result-event/);
+  assert.match(planning, /cht:planning-context/);
+  assert.match(planning, /cht:planning-demand-event/);
+  assert.match(planning, /cht:planning-monitoring-request/);
+  assert.match(planning, /cht:planning-regulatory-action-event/);
+  assert.match(planning, /cht:module-event/);
+  assert.match(planning, /cht:focus-map/);
+  assert.match(balance, /cht:planning-demand-event/);
+  assert.match(dataHub, /cht:planning-monitoring-request/);
+  assert.match(useRegulation, /cht:planning-regulatory-action-event/);
+  assert.match(page, /PlanningHub/);
+  assert.match(tower, /receiveModuleEvent/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),

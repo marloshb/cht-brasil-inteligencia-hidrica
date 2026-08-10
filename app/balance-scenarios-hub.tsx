@@ -179,6 +179,35 @@ export function BalanceScenariosHub({ contextItem, territory, clockLabel, onNavi
   }, []);
 
   useEffect(() => {
+    const receivePlanningDemand = (event: Event) => {
+      const detail = (event as CustomEvent<{ planId?: string; actionId?: string; scenarioId?: string; horizon?: string; demandAdjustment?: number; investment?: number; territory?: string; center?: [number, number]; requestedBy?: string }>).detail;
+      if (!detail?.planId || !detail.actionId) return;
+      const scenarioId = `CEN-PLAN-${detail.actionId.replace("ACT-", "")}`;
+      const scenario: Scenario = {
+        id: scenarioId,
+        name: `Reprogramação ${detail.planId}`,
+        climate: "Referência do plano + ensemble M6",
+        rainfall: 88,
+        demand: Math.max(70, 100 + (detail.demandAdjustment ?? 0)),
+        efficiency: Math.abs(detail.demandAdjustment ?? 0),
+        rule: `portfólio M8 · ${detail.actionId}`,
+        horizon: detail.horizon ?? "2027–2035",
+        balance: 7.4,
+        reliability: 89,
+        deficit: 0.7,
+        cost: Math.round((detail.investment ?? 0) * 10) / 10,
+        score: 92,
+        status: "Rascunho",
+      };
+      setScenarios((items) => items.some((item) => item.id === scenarioId) ? items.map((item) => item.id === scenarioId ? scenario : item) : [scenario, ...items]);
+      setSelectedScenarioId(scenarioId);
+      onToast(`${detail.requestedBy ?? "M8"} solicitou novo cenário; ${scenarioId} criado como rascunho reproduzível.`);
+    };
+    window.addEventListener("cht:planning-demand-event", receivePlanningDemand);
+    return () => window.removeEventListener("cht:planning-demand-event", receivePlanningDemand);
+  }, [onToast]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => setAgentStep((step) => {
       if (step >= 5) { setAgentRunning(false); onToast("Análise concluída; alternativas e incertezas disponíveis para decisão humana."); return step; }

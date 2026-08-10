@@ -156,6 +156,21 @@ O GeoFiscal transforma indícios territoriais em casos rastreáveis sem presumir
 
 O M7 recebe `cht:data-context` do M5, `cht:scenario-context` do M6 e `cht:regulation-context` do M4. Publica `cht:inspection-context` para preservar o caso nos módulos consumidores; devolve evidências ao M5 por `cht:field-evidence-event`; envia resultados ao M4 por `cht:inspection-result-event`, que cria revisão, condicionante e obrigação no M2; sincroniza a seleção ArcGIS por `cht:focus-map`; e escala riscos e resultados ao M0 por `cht:module-event`. O Assistente de Vistoria pode consultar, correlacionar, priorizar e redigir, mas não emite ordem, sanciona, autua, presume responsabilidade ou decide o caso.
 
+## M8 — Planejamento Hídrico detalhado
+
+O M8 conecta planos, programas, ações, projetos, investimentos, metas, evidências e benefícios em uma cadeia territorial rastreável. O planejamento usa cenários, regulação e dados qualificados sem transformar recomendações em compromissos automáticos. O produto possui oito áreas operacionais:
+
+- **Planos:** registro versionado, escopo, horizonte, governança, alinhamento PNRH/PERH/plano de bacia, estrutura importada e base decisória conectada;
+- **Programas:** eixos, objetivos, responsáveis, orçamento, capacidade de entrega, benefícios, pactos e governança interfederativa;
+- **Ações:** território, responsável, período, prioridade, orçamento, progresso, marcos, dependências, riscos e evidências por módulo;
+- **Projetos:** quadro stage-gate da estruturação à operação, prontidão, risco, CAPEX, critérios, condicionantes e decisão humana;
+- **Investimentos:** planejado, comprometido e executado, fontes, waterfall, cobertura territorial, lacunas e conciliação demonstrativa;
+- **Metas:** baseline, valor atual, alvo, prazo, fonte, qualidade, tendência, contribuição e contrato de monitoramento no M5;
+- **Resultados:** produtos, resultados, benefícios, contribuição, evidências M5/M7, verificação e limites de atribuição causal;
+- **Avaliação:** maturidade, eficácia, eficiência, impacto, governança, achados, aprendizado, reprogramação e publicação de nova versão.
+
+O M8 recebe `cht:scenario-context` do M6, `cht:data-context` do M5, `cht:regulation-context` do M4 e `cht:inspection-result-event` do M7. Publica `cht:planning-context` para preservar plano, ação e projeto nos módulos consumidores; solicita novo cenário ao M6 por `cht:planning-demand-event`; cria contratos de indicadores no M5 por `cht:planning-monitoring-request`; abre revisão e condicionante no M4 por `cht:planning-regulatory-action-event`; sincroniza seleções no ArcGIS por `cht:focus-map`; e envia pactos, gates e reprogramações ao M0 por `cht:module-event`. O Agente de Portfólio pode consultar, comparar, priorizar e redigir, mas não pactua metas, compromete orçamento, cancela projetos, publica planos ou decide investimentos.
+
 ## Configuração GIS
 
 O protótipo usa o CDN oficial do ArcGIS Maps SDK 5.1. Não há chave hardcoded. A demonstração usa OSM e serviços públicos, portanto funciona sem segredo. Em uma evolução autenticada, a chave deve ser fornecida apenas por variável de ambiente e restringida por domínio e escopo.
@@ -168,7 +183,7 @@ Fontes públicas demonstradas:
 
 ## Roteiro rápido
 
-1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4, M5, M6 e M7.
+1. Abra **Aplicações** e navegue entre os 13 produtos; percorra M1, M2 e as oito áreas operacionais de M3, M4, M5, M6, M7 e M8.
 2. Altere o **Contexto territorial** na barra superior.
 3. Inicie J1, J2 ou J3 e use os controles live/replay no rodapé.
 4. Abra a execução do agente para ver plano, ferramentas, evidências e limites.

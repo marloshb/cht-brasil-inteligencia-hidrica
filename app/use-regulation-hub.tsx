@@ -267,6 +267,30 @@ export function UseRegulationHub({ contextItem, territory, clockLabel, onNavigat
   }, [onToast, selectedAct.id]);
 
   useEffect(() => {
+    const receivePlanningRegulatoryAction = (event: Event) => {
+      const detail = (event as CustomEvent<{ planId?: string; actionId?: string; demandId?: string; title?: string; due?: string; authority?: string; scenarioId?: string }>).detail;
+      if (!detail?.planId || !detail.actionId) return;
+      const revisionId = `REV-PLAN-${detail.actionId}`;
+      const revision: Revision = {
+        id: revisionId,
+        title: detail.title ?? "Revisar aderência regulatória da ação planejada",
+        trigger: `${detail.planId} · ${detail.scenarioId ?? "cenário M6"}`,
+        actId: selectedAct.id,
+        impact: `${detail.actionId} · demanda ${detail.demandId ?? "a confirmar"}`,
+        status: "Em análise",
+        due: detail.due ?? "30 dias",
+      };
+      setRevisions((items) => items.some((item) => item.id === revisionId) ? items.map((item) => item.id === revisionId ? revision : item) : [revision, ...items]);
+      const conditionId = `CND-PLAN-${detail.actionId}`;
+      const condition: Condition = { id: conditionId, title: `Acompanhar aderência de ${detail.actionId}`, actId: selectedAct.id, category: "Planejamento", frequency: "mensal", nextDue: detail.due ?? "30 dias", evidence: `${detail.planId} · M8`, status: "Pendente", module: "m8" };
+      setConditions((items) => items.some((item) => item.id === conditionId) ? items.map((item) => item.id === conditionId ? condition : item) : [condition, ...items]);
+      onToast(`${detail.actionId} recebida do M8; revisão e condicionante regulatórias foram abertas sem alterar o ato.`);
+    };
+    window.addEventListener("cht:planning-regulatory-action-event", receivePlanningRegulatoryAction);
+    return () => window.removeEventListener("cht:planning-regulatory-action-event", receivePlanningRegulatoryAction);
+  }, [onToast, selectedAct.id]);
+
+  useEffect(() => {
     if (!agentRunning) return;
     const interval = window.setInterval(() => setAgentStep((step) => {
       if (step >= 4) { setAgentRunning(false); onToast("Pré-análise concluída; proposta não vinculante disponível para revisão humana."); return step; }

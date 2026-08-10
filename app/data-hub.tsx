@@ -272,6 +272,29 @@ export function DataHub({ contextItem, territory, clockLabel, onNavigate, onOpen
   }, [clockLabel, onToast, subject.chtId]);
 
   useEffect(() => {
+    const receivePlanningMonitoring = (event: Event) => {
+      const detail = (event as CustomEvent<{ goalId?: string; actionId?: string; indicator?: string; source?: string; due?: string; baseline?: number; target?: number; unit?: string; territory?: string; center?: [number, number] }>).detail;
+      if (!detail?.goalId || !detail.actionId) return;
+      const monitoringEvent: DataEvent = {
+        id: `DHE-PLAN-${detail.goalId}`,
+        title: `Contrato de indicador solicitado · ${detail.indicator ?? detail.goalId}`,
+        type: "planning.indicator.monitoring.requested",
+        stationId: detail.source ?? subject.chtId,
+        severity: "Média",
+        detectedAt: clockLabel,
+        confidence: 91,
+        status: "Encaminhado",
+        consumers: ["M5", "M8", "M11"],
+      };
+      setEvents((items) => items.some((item) => item.id === monitoringEvent.id) ? items.map((item) => item.id === monitoringEvent.id ? monitoringEvent : item) : [monitoringEvent, ...items]);
+      setSelectedEventId(monitoringEvent.id);
+      onToast(`${detail.goalId} recebido do M8; contrato, fonte, baseline e alvo entraram na fila de monitoramento.`);
+    };
+    window.addEventListener("cht:planning-monitoring-request", receivePlanningMonitoring);
+    return () => window.removeEventListener("cht:planning-monitoring-request", receivePlanningMonitoring);
+  }, [clockLabel, onToast, subject.chtId]);
+
+  useEffect(() => {
     const interval = window.setInterval(() => setLivePulse((value) => (value + 1) % 12), 1800);
     return () => window.clearInterval(interval);
   }, []);
