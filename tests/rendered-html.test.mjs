@@ -626,7 +626,7 @@ test("keeps the Cloudflare deployment reproducible and secret-free", async () =>
   assert.equal(wranglerConfig.main, "dist/server/index.js");
   assert.equal(wranglerConfig.assets.directory, "dist/client");
   assert.equal(wranglerConfig.assets.binding, "ASSETS");
-  assert.equal(wranglerConfig.assets.run_worker_first, true);
+  assert.equal(wranglerConfig.assets.run_worker_first, false);
   assert.deepEqual(wranglerConfig.compatibility_flags, ["nodejs_compat"]);
   assert.equal(wranglerConfig.observability.enabled, true);
   assert.match(packageConfig.scripts["cloudflare:check"], /wrangler deploy --dry-run/);
