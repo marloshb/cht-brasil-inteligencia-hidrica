@@ -360,6 +360,13 @@ const statusColor: Record<string, string> = {
   waiting: "warn",
 };
 
+const presentationAgents = [
+  { id: "AGT-ORQ-001", name: "Orquestrador CHT", module: "M12", task: "Roteando evento crítico", states: ["validando contexto", "selecionando especialistas", "aplicando política HIL", "consolidando trace"] },
+  { id: "AGT-DAT-005", name: "Qualidade de Dados", module: "M5", task: "Qualificando séries ao vivo", states: ["checando frescor", "comparando fontes", "marcando anomalias", "publicando visão qualificada"] },
+  { id: "AGT-FIS-007", name: "Vistoria Inteligente", module: "M7", task: "Correlacionando evidências", states: ["lendo imagem", "cruzando outorga", "estimando divergência", "preparando despacho"] },
+  { id: "AGT-CRS-009", name: "Agente de Crise", module: "M9", task: "Atualizando briefing nacional", states: ["recebendo telemetria", "comparando cenários", "priorizando alternativas", "aguardando decisão humana"] },
+];
+
 function formatClock(date: Date) {
   return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
@@ -371,7 +378,8 @@ export default function Home() {
   const [launcherQuery, setLauncherQuery] = useState("");
   const [activeJourneyId, setActiveJourneyId] = useState("j1");
   const [journeyStep, setJourneyStep] = useState(0);
-  const [running, setRunning] = useState(false);
+  const [running, setRunning] = useState(true);
+  const [liveAgentTick, setLiveAgentTick] = useState(0);
   const [speed, setSpeed] = useState(1);
   const [clock, setClock] = useState(new Date(2026, 7, 7, 14, 32, 8));
   const [detailTab, setDetailTab] = useState("operacao");
@@ -415,17 +423,28 @@ export default function Home() {
     if (!running) return;
     const interval = window.setInterval(() => {
       setClock((value) => new Date(value.getTime() + 180000));
-      setJourneyStep((value) => {
-        if (value >= activeJourney.events.length - 1) {
-          setRunning(false);
-          setToast("Jornada concluída. A decisão humana e a trilha foram registradas.");
-          return value;
-        }
-        return value + 1;
-      });
+      setJourneyStep((value) => value >= activeJourney.events.length - 1 ? value : value + 1);
     }, Math.max(900, 3100 / speed));
     return () => window.clearInterval(interval);
   }, [running, speed, activeJourney.events.length]);
+
+  useEffect(() => {
+    if (!running || journeyStep < activeJourney.events.length - 1) return;
+    const handoff = window.setTimeout(() => {
+      const currentIndex = journeys.findIndex((item) => item.id === activeJourneyId);
+      const nextJourney = journeys[(currentIndex + 1) % journeys.length];
+      setActiveJourneyId(nextJourney.id);
+      setJourneyStep(0);
+      setToast(`Handoff automático para ${nextJourney.id.toUpperCase()} · ${nextJourney.name}; trace e contexto preservados.`);
+    }, Math.max(1100, 3400 / speed));
+    return () => window.clearTimeout(handoff);
+  }, [running, journeyStep, speed, activeJourneyId, activeJourney.events.length]);
+
+  useEffect(() => {
+    if (!running) return;
+    const timer = window.setInterval(() => setLiveAgentTick((value) => value + 1), 1600);
+    return () => window.clearInterval(timer);
+  }, [running]);
 
   useEffect(() => {
     if (moduleId === "m1" || moduleId === "m2" || moduleId === "m3" || moduleId === "m4" || moduleId === "m5" || moduleId === "m6" || moduleId === "m7" || moduleId === "m8" || moduleId === "m9" || moduleId === "m10" || moduleId === "m11" || moduleId === "m12") return;
@@ -700,6 +719,24 @@ export default function Home() {
             <button className="secondary-button" onClick={exportReport}>⇩ Exportar relatório</button>
             <button className="secondary-button" onClick={() => setAgentOpen(true)}>✦ Consultar agentes</button>
             <button className="primary-button" onClick={() => moduleId === "m12" ? setContextItem("Execuções") : setFormOpen(true)}>＋ {activeModule.code === "m0" ? "Novo caso" : activeModule.code === "M12" ? "Nova execução" : "Novo registro"}</button>
+          </div>
+        </section>
+
+        <section className="live-agent-console" aria-label="Agentes governados em execução simulada">
+          <header>
+            <div><span className="live-pip" /><strong>AGENTES EM OPERAÇÃO</strong><small>simulação governada · sem efeitos externos</small></div>
+            <button onClick={() => switchModule("m12")}>{running ? `${presentationAgents.length} execuções ao vivo` : "execuções pausadas"} <span>→</span></button>
+          </header>
+          <div className="live-agent-grid">
+            {presentationAgents.map((agent, index) => {
+              const phase = (liveAgentTick + index) % agent.states.length;
+              const progress = 34 + ((liveAgentTick * 13 + index * 17) % 61);
+              return <button key={agent.id} className="live-agent-card" onClick={() => { switchModule("m12"); setToast(`${agent.name}: trace ao vivo aberto na Central de Agentes.`); }}>
+                <span className="live-agent-orb">✦<i /></span>
+                <span className="live-agent-copy"><small>{agent.id} · {agent.module}</small><strong>{agent.name}</strong><em>{agent.task}</em></span>
+                <span className="live-agent-state"><b><i />{running ? agent.states[phase] : "pausado"}</b><span><i style={{ width: running ? `${progress}%` : "0%" }} /></span></span>
+              </button>;
+            })}
           </div>
         </section>
 

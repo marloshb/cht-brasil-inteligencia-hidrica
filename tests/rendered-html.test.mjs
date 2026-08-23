@@ -595,6 +595,25 @@ test("implements the connected M12 agent control plane workflows", async () => {
   assert.match(tower, /receiveModuleEvent/);
 });
 
+test("keeps operational typography readable and agents visibly live", async () => {
+  const [css, page, agents] = await Promise.all([
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/agent-center-hub.tsx", import.meta.url), "utf8"),
+  ]);
+  const sizes = [...css.matchAll(/font-size\s*:\s*(\d+(?:\.\d+)?)px/g)].map((match) => Number(match[1]));
+  assert.ok(sizes.length > 1000);
+  assert.ok(Math.min(...sizes) >= 11, `found unreadable font-size: ${Math.min(...sizes)}px`);
+  assert.match(css, /\.live-agent-console/);
+  assert.match(page, /presentationAgents/);
+  assert.match(page, /simulação governada · sem efeitos externos/);
+  assert.match(page, /Handoff automático/);
+  assert.match(page, /useState\(true\)/);
+  assert.match(agents, /advanceDuration/);
+  assert.match(agents, /activeRunCount/);
+  assert.match(agents, /const heartbeat = window\.setInterval/);
+});
+
 test("uses ArcGIS 5.1, ANA services, Living Atlas and local fallback layers", async () => {
   const [page, layout] = await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
